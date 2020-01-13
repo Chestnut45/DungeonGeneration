@@ -27,7 +27,7 @@ namespace DungeonGeneration
             graphics.ApplyChanges();
 
             Generator generator = new Generator();
-            generator.generateDungeon(50, true);
+            generator.generateDungeon(50, false);
 
             base.Initialize();
         }

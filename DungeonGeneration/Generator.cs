@@ -16,6 +16,20 @@ namespace DungeonGeneration
         public string seed;
         public int nx, ny;
 
+        //Room maps are all 48x27 tiles
+        public int[,] defaultMap = new int[48, 27];
+
+        public void generateDefaultMap()
+        {
+            for (int i = 0; i < defaultMap.GetLength(0); i++)
+            {
+                for (int j = 0; j < defaultMap.GetLength(1); j++)
+                {
+                    defaultMap[i, j] = 0;
+                }
+            }
+        }
+
         public int countRooms(Room[] roomArray)
         {
             createdRooms = 0;
@@ -244,6 +258,7 @@ namespace DungeonGeneration
         public void populateRooms(Room[] rooms)
         {
             //Check exit types and fill rooms
+            generateDefaultMap();
 
             //Display all room data
             for (int i = 0; i < rooms.Length; i++)
