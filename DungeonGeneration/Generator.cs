@@ -9,6 +9,7 @@ namespace DungeonGeneration
 {
     public class Generator
     {
+        //This code is kinda messy, will clean up at a later date
         int createdRooms;
         Room currentRoom, previousRoom;
         bool[] currentExits = new bool[4];
