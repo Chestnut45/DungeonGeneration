@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DungeonGeneration", "DungeonGeneration\DungeonGeneration.csproj", "{467688ED-A23C-4AA8-8BF5-D9D6228A84CF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{065527B6-4482-4447-A28D-43C741DDB5D2}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{467688ED-A23C-4AA8-8BF5-D9D6228A84CF}.Debug|x86.ActiveCfg = Debug|x86
+		{467688ED-A23C-4AA8-8BF5-D9D6228A84CF}.Debug|x86.Build.0 = Debug|x86
+		{467688ED-A23C-4AA8-8BF5-D9D6228A84CF}.Release|x86.ActiveCfg = Release|x86
+		{467688ED-A23C-4AA8-8BF5-D9D6228A84CF}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AE2F52D5-EFFC-4FF7-A5FC-907EBE8E42C4}
+	EndGlobalSection
+EndGlobal
