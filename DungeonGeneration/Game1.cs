@@ -19,6 +19,13 @@ namespace DungeonGeneration
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
+            graphics.SynchronizeWithVerticalRetrace = true;
+            graphics.IsFullScreen = false;
+            IsMouseVisible = true;
+            graphics.ApplyChanges();
+
             Generator generator = new Generator();
             generator.generateDungeon(50, true);
 

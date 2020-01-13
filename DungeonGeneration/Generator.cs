@@ -237,10 +237,18 @@ namespace DungeonGeneration
 
             //Have all adjacent rooms loaded for screen transitions OwO
 
+            //Populate
+            populateRooms(rooms);
+        }
+
+        public void populateRooms(Room[] rooms)
+        {
+            //Check exit types and fill rooms
+
             //Display all room data
-            for (int i = 0; i < targetrooms; i++)
+            for (int i = 0; i < rooms.Length; i++)
             {
-                if (rooms[i]!=null)
+                if (rooms[i] != null)
                 {
                     Console.WriteLine("Room " + i + " at position: " + rooms[i].mx + "," + rooms[i].my);
                     Console.WriteLine("[{0}]", string.Join(", ", rooms[i].exits));
