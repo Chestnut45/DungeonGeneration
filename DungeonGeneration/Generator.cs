@@ -25,7 +25,13 @@ namespace DungeonGeneration
             {
                 for (int j = 0; j < defaultMap.GetLength(1); j++)
                 {
-                    defaultMap[i, j] = 0;
+                    if (i == 0 || i == defaultMap.GetLength(0) || j == 0 || j == defaultMap.GetLength(1))
+                    {
+                        defaultMap[i, j] = 1;
+                    } else
+                    {
+                        defaultMap[i, j] = 0;
+                    }
                 }
             }
         }
