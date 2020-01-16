@@ -272,7 +272,14 @@ namespace DungeonGeneration
             int l = 0;
             foreach (Room r in rooms)
             {
-                r.map = defaultMap;
+                for (int i = 0; i < r.map.GetLength(0); i++)
+                {
+                    for (int j = 0; j < r.map.GetLength(1); j++)
+                    {
+                        r.map[i, j] = defaultMap[i, j];
+                    }
+                }
+                //r.map = defaultMap;
                 r.id = l;
                 l++;
             }
