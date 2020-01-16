@@ -25,7 +25,7 @@ namespace DungeonGeneration
             {
                 for (int j = 0; j < defaultMap.GetLength(1); j++)
                 {
-                    if (i == 0 || i == defaultMap.GetLength(0) || j == 0 || j == defaultMap.GetLength(1))
+                    if (i == 0 || i == defaultMap.GetLength(0) - 1 || j == 0 || j == defaultMap.GetLength(1) - 1)
                     {
                         defaultMap[i, j] = 1;
                     } else
@@ -116,7 +116,7 @@ namespace DungeonGeneration
             ny = currentRoom.my + checkMapYOffset;
         }
 
-        public void generateDungeon(int targetrooms, bool useRandomSeed)
+        public Room[] generateDungeon(int targetrooms, bool useRandomSeed)
         {
             //Seed code
             if(useRandomSeed)
@@ -168,7 +168,7 @@ namespace DungeonGeneration
                         notDeadRooms.RemoveAt(roomToCheck);
                     } else
                     {
-                        int exitIndex = rng.Next(0, 3); // random exit array
+                        int exitIndex = rng.Next(0, 3); // random exit index
                         currentExits[exitIndex] = true;
 
                         //First time calc
@@ -259,21 +259,67 @@ namespace DungeonGeneration
 
             //Populate
             populateRooms(rooms);
+
+            //Return all rooms
+            return rooms;
         }
 
         public void populateRooms(Room[] rooms)
         {
-            //Check exit types and fill rooms
+            //Generate the template
             generateDefaultMap();
 
-            //Display all room data
+            int l = 0;
+            foreach (Room r in rooms)
+            {
+                r.map = defaultMap;
+                r.id = l;
+                l++;
+            }
+
+            foreach (int b in defaultMap)
+            {
+                Console.WriteLine(b);
+            }
+
             for (int i = 0; i < rooms.Length; i++)
             {
+
+                //Add (or rather subtract) exits
+                if (rooms[i].exits[0]) //LEFT EXIT
+                {
+                    rooms[i].map[0, rooms[i].map.GetLength(1) - 2] = 0;
+                    rooms[i].map[0, rooms[i].map.GetLength(1) - 3] = 0;
+                }
+
+                if (rooms[i].exits[1]) //UP EXIT
+                {
+                    rooms[i].map[(rooms[i].map.GetLength(0) / 2), 0] = 0;
+                    rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, 0] = 0;
+                }
+
+                if (rooms[i].exits[2]) //RIGHT
+                {
+                    rooms[i].map[rooms[i].map.GetLength(0) - 1, rooms[i].map.GetLength(1) - 2] = 0;
+                    rooms[i].map[rooms[i].map.GetLength(0) - 1, rooms[i].map.GetLength(1) - 3] = 0;
+                }
+
+                if (rooms[i].exits[3]) //DOWN EXIT
+                {
+                    rooms[i].map[(rooms[i].map.GetLength(0) / 2), rooms[i].map.GetLength(1) - 1] = 0;
+                    rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, rooms[i].map.GetLength(1) - 1] = 0;
+                }
+
                 if (rooms[i] != null)
                 {
                     Console.WriteLine("Room " + i + " at position: " + rooms[i].mx + "," + rooms[i].my);
                     Console.WriteLine("[{0}]", string.Join(", ", rooms[i].exits));
                 }
+            }
+
+            foreach (int b in defaultMap)
+            {
+                Console.WriteLine(b);
             }
         }
     }

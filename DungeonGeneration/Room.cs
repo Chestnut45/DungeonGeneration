@@ -8,7 +8,8 @@ namespace DungeonGeneration
 {
     public class Room
     {
-        public int mx, my;
+        public int mx, my, id;
+        public int[,] map;
         public bool[] exits = new bool[4];
         public Room[] adjacentRooms = new Room[4];
         public Room(int mapx, int mapy)
