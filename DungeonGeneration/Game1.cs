@@ -15,6 +15,7 @@ namespace DungeonGeneration
         //Graphics stuff
         int tilesize = 8;
         SpriteFont testfont;
+        Camera cam = new Camera();
 
         //Dungeon stuff
 
@@ -105,7 +106,15 @@ namespace DungeonGeneration
                 }
             }
 
-            //Updsate previous keyboard state
+            if (ks.IsKeyDown(Keys.F) & !prevks.IsKeyDown(Keys.F))
+            {
+                graphics.ToggleFullScreen();
+            }
+
+            //Update camera
+            cam.Update();
+
+            //Update previous keyboard state
             prevks = ks;
             base.Update(gameTime);
         }
@@ -116,7 +125,7 @@ namespace DungeonGeneration
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            spriteBatch.Begin(SpriteSortMode.Deferred);
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null, cam.ViewMatrix);
 
             //Go through current room and draw tiles
             if (player.currentRoom != null)

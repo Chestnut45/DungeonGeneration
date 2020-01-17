@@ -11,13 +11,13 @@ namespace DungeonGeneration
     {
         //This code is kinda messy, will clean up at a later date
         int createdRooms;
-        Room currentRoom, previousRoom;
+        Room currentRoom;//, previousRoom;
         bool[] currentExits = new bool[4];
         public string seed;
         public int nx, ny;
 
-        //Room maps are all 48x27 tiles
-        public int[,] defaultMap = new int[48, 27];
+        //Room maps are all 32x18 tiles
+        public int[,] defaultMap = new int[32, 18];
 
         public void generateDefaultMap()
         {
