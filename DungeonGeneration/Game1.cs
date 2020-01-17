@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Diagnostics;
 
 namespace DungeonGeneration
@@ -21,9 +22,11 @@ namespace DungeonGeneration
 
         //Game objects
         Player player = new Player();
+        Physics physics = new Physics();
 
         //Textures
-        Texture2D sWall;
+        Texture2D sWall, sPlayer;
+        Texture2D hbtex;
 
         public Game1()
         {
@@ -51,7 +54,16 @@ namespace DungeonGeneration
 
             // TODO: use this.Content to load your game content here
             sWall = Content.Load<Texture2D>("sWallTest");
+            sPlayer = Content.Load<Texture2D>("sPlayerTest");
             testfont = Content.Load<SpriteFont>("Fonts/testfont");
+
+            //Hitbox shit
+            //Make one pixel of color and transparency
+            Byte transparency_amount = 100; //0 transparent; 255 opaque
+            hbtex = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            Color[] c = new Color[1];
+            c[0] = Color.FromNonPremultiplied(255, 0, 0, transparency_amount);
+            hbtex.SetData<Color>(c);
         }
 
         protected override void UnloadContent()
@@ -65,12 +77,20 @@ namespace DungeonGeneration
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            //Texture cheating
+            if (player.texture != sPlayer)
+            {
+                player.texture = sPlayer;
+            }
+
             // TODO: Add your update logic here
             ks = Keyboard.GetState();
             if (ks.IsKeyDown(Keys.P) & !prevks.IsKeyDown(Keys.P))
             {
                 player.currentDungeon = generator.generateDungeon(50, false);
                 player.currentRoom = player.currentDungeon[0]; //currentDungeon is just a 1d array of rooms that all belong to the current dungeon
+                player.x = player.currentRoom.map.GetLength(0) / 2;
+                player.y = player.currentRoom.map.GetLength(1) / 2;
             }
 
             //Change rooms
@@ -113,6 +133,8 @@ namespace DungeonGeneration
 
             //Update camera
             cam.Update();
+            //physics.Update(player);
+            player.Update();
 
             //Update previous keyboard state
             prevks = ks;
@@ -126,6 +148,9 @@ namespace DungeonGeneration
 
             // TODO: Add your drawing code here
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null, cam.ViewMatrix);
+
+            //Draw Player
+            spriteBatch.Draw(player.texture, new Vector2(player.x*tilesize, player.y*tilesize));
 
             //Go through current room and draw tiles
             if (player.currentRoom != null)
@@ -148,6 +173,9 @@ namespace DungeonGeneration
                 spriteBatch.DrawString(testfont, "Room " + player.currentRoom.id.ToString(), Vector2.Zero, Color.White);
                 spriteBatch.DrawString(testfont, "X: " + player.currentRoom.mx.ToString() + " " + "Y: " + player.currentRoom.my.ToString(), new Vector2(0,16), Color.White);
             }
+
+            //Draw hitboxes
+            spriteBatch.Draw(hbtex, player.boundingBox, Color.White);
             
             spriteBatch.End();
 

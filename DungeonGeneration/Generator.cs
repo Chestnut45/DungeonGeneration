@@ -256,6 +256,7 @@ namespace DungeonGeneration
             }
 
             //Have all adjacent rooms loaded for screen transitions OwO
+            //Or not
 
             //Populate
             populateRooms(rooms);
@@ -266,6 +267,8 @@ namespace DungeonGeneration
 
         public void populateRooms(Room[] rooms)
         {
+            //TODO: Build actual objects for entire dungeon;
+
             //Generate the template
             generateDefaultMap();
 
