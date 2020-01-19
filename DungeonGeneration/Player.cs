@@ -23,10 +23,10 @@ namespace DungeonGeneration
 
         public void Update()
         {
-            boundingBox.X = x * 8;
-            boundingBox.Y = y * 8;
-            boundingBox.Width = texture.Width;
-            boundingBox.Height = texture.Height;
+            boundingBox.X = (x * 8) + 2;
+            boundingBox.Y = (y * 8) + 5;
+            boundingBox.Width = texture.Width - 3;
+            boundingBox.Height = texture.Height - 5;
         }
     }
 }

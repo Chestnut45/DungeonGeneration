@@ -91,6 +91,8 @@ namespace DungeonGeneration
                 player.currentRoom = player.currentDungeon[0]; //currentDungeon is just a 1d array of rooms that all belong to the current dungeon
                 player.x = player.currentRoom.map.GetLength(0) / 2;
                 player.y = player.currentRoom.map.GetLength(1) / 2;
+
+                //TODO: Build dungeon room objects. Load all in memory or one room / dungeon at a time?
             }
 
             //Change rooms
@@ -144,7 +146,7 @@ namespace DungeonGeneration
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null, cam.ViewMatrix);
