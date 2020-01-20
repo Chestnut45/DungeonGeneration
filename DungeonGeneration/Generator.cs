@@ -14,6 +14,7 @@ namespace DungeonGeneration
         // 1 = Wall
         // 2 = Locked door (Horizontal)
         // 3 = Locked door (Vertical)
+        // 4 = Key
 
         //This code is kinda messy, will clean up at a later date
         int createdRooms;
@@ -337,6 +338,7 @@ namespace DungeonGeneration
             int n, index;
             Room a, b = null;
             List<Room> lockedRooms = new List<Room>();
+            List<Room> singleExitRooms = new List<Room>();
             List<Room> multiExitRooms = new List<Room>();
             List<Room> keyRooms = new List<Room>();
 
@@ -351,17 +353,31 @@ namespace DungeonGeneration
                 if (n == 1)
                 {
                     //For now just add to room list
-                    //TODO: make it a random chance to lock the room. It's no fun if every single dead end is locked.
-                    //TODO: make sure you never lock more rooms than we have available key rooms
-                    lockedRooms.Add(rms[i]);
+                    singleExitRooms.Add(rms[i]);
                 } else
                 {
                     multiExitRooms.Add(rms[i]);
                 }
             }
 
+            //Add some amount of single exit rooms to locked rooms, the rest are for keys? For now 50/50
+            foreach (Room r in singleExitRooms)
+            {
+                if (rng.Next(0,2) == 0)
+                {
+                    lockedRooms.Add(r);
+                }
+            }
+
+            //Remove lockedrooms from singleexitrooms
+            foreach (Room r in lockedRooms)
+            {
+                singleExitRooms.Remove(r);
+            }
+
             //Perform the check to make sure there is enough key rooms for locked rooms
-            while (lockedRooms.Count > multiExitRooms.Count - 6) //This magic number is arbitrary and means almost nothing, it's the amount of rooms that will NOT have a key.
+            //This will probably NEVER happen in the life of the game, but it needs to be here on that off chance.
+            while (lockedRooms.Count > multiExitRooms.Count)
             {
                 lockedRooms.RemoveAt(rng.Next(0, lockedRooms.Count - 1));
             }
@@ -407,6 +423,16 @@ namespace DungeonGeneration
                 }
             }
 
+            //First go through single exit rooms, favorable for keys
+            foreach (Room ser in singleExitRooms)
+            {
+                if (keyRooms.Count >= lockedRooms.Count)
+                {
+                    break;
+                }
+                keyRooms.Add(ser);
+            }
+
             //Reverse list to make keys further away
             multiExitRooms.Reverse();
 
@@ -423,8 +449,7 @@ namespace DungeonGeneration
             //Go through every key room and generate a key based on the exits
             foreach (Room kr in keyRooms)
             {
-                //TODO: Work out logic of where to place key
-
+                placeKey(kr, rng);
             }
         }
 
@@ -443,6 +468,52 @@ namespace DungeonGeneration
             }
 
             return count;
+        }
+
+        public void placeKey(Room kr, Random rng)
+        {
+            //Key placement logic
+            if (kr.exits[0] && !kr.exits[2]) // Left and !right
+                kr.map[kr.map.GetLength(0) - 3, kr.map.GetLength(1) - 2] = 4;
+            if (!kr.exits[0] && kr.exits[2]) // !Left and right
+                kr.map[2, kr.map.GetLength(1) - 2] = 4;
+            if ((kr.exits[0] && kr.exits[2]) || !kr.exits[0] && !kr.exits[2]) // Left AND right || !left AND !right exits
+            {
+                if (!kr.exits[3]) //Down exit exists
+                {
+                    kr.map[(kr.map.GetLength(0) / 2) - 1, kr.map.GetLength(1) - 2] = 4;
+                }
+                else // Down exit does not exist
+                {
+                    if (kr.exits[1]) // Up exit exists
+                    {
+                        //Right or left platform
+                        if (rng.Next(0, 2) == 0) //If this looks weird, the first value of rng.Next is inclusive, but the second value is exclusive. DUMB.
+                        {
+                            //Left platform
+                            kr.map[1, kr.map.GetLength(1) - 4] = 1;
+                            kr.map[2, kr.map.GetLength(1) - 4] = 1;
+                            kr.map[1, kr.map.GetLength(1) - 5] = 4;
+                        }
+                        else
+                        {
+                            //Right platform
+                            kr.map[kr.map.GetLength(0) - 2, kr.map.GetLength(1) - 4] = 1;
+                            kr.map[kr.map.GetLength(0) - 3, kr.map.GetLength(1) - 4] = 1;
+                            kr.map[kr.map.GetLength(0) - 2, kr.map.GetLength(1) - 5] = 4;
+                        }
+                    }
+                    else // Up exit does not exist
+                    {
+                        //Middle platform
+                        kr.map[kr.map.GetLength(0) / 2, kr.map.GetLength(1) - 5] = 1;
+                        kr.map[(kr.map.GetLength(0) / 2) - 1, kr.map.GetLength(1) - 5] = 1;
+                        kr.map[(kr.map.GetLength(0) / 2) - 2, kr.map.GetLength(1) - 5] = 1;
+                        kr.map[(kr.map.GetLength(0) / 2) + 1, kr.map.GetLength(1) - 5] = 1;
+                        kr.map[(kr.map.GetLength(0) / 2), kr.map.GetLength(1) - 6] = 4;
+                    }
+                }
+            }
         }
     }
 }

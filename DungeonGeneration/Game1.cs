@@ -25,7 +25,7 @@ namespace DungeonGeneration
         Physics physics = new Physics();
 
         //Textures
-        Texture2D sWall, sPlayer, sLockDoor, sLockDoorV;
+        Texture2D sWall, sPlayer, sLockDoor, sLockDoorV, sKey;
         Texture2D hbtex;
 
         public Game1()
@@ -58,6 +58,7 @@ namespace DungeonGeneration
             sLockDoor = Content.Load<Texture2D>("sLockDoor");
             sLockDoorV = Content.Load<Texture2D>("sLockDoorVertical");
             testfont = Content.Load<SpriteFont>("Fonts/testfont");
+            sKey = Content.Load<Texture2D>("sKey");
 
             //Hitbox shit
             //Make one pixel of color and transparency
@@ -177,6 +178,9 @@ namespace DungeonGeneration
                                 break;
                             case 3:
                                 spriteBatch.Draw(sLockDoorV, new Vector2(i * tilesize, j * tilesize));
+                                break;
+                            case 4:
+                                spriteBatch.Draw(sKey, new Vector2(i * tilesize, j * tilesize));
                                 break;
                         }
                     }
