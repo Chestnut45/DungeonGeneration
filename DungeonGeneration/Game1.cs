@@ -90,7 +90,7 @@ namespace DungeonGeneration
             ks = Keyboard.GetState();
             if (ks.IsKeyDown(Keys.P) & !prevks.IsKeyDown(Keys.P))
             {
-                player.currentDungeon = generator.generateDungeon(50, false);
+                player.currentDungeon = generator.generateDungeon(20, true);
                 player.currentRoom = player.currentDungeon[0]; //currentDungeon is just a 1d array of rooms that all belong to the current dungeon
                 player.x = player.currentRoom.map.GetLength(0) / 2;
                 player.y = player.currentRoom.map.GetLength(1) / 2;

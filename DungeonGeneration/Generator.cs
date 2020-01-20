@@ -175,7 +175,7 @@ namespace DungeonGeneration
                         notDeadRooms.RemoveAt(roomToCheck);
                     } else
                     {
-                        int exitIndex = rng.Next(0, 3); // random exit index
+                        int exitIndex = rng.Next(0, 4); // random exit index
                         currentExits[exitIndex] = true;
 
                         //First time calc
@@ -336,7 +336,7 @@ namespace DungeonGeneration
         public void lockRooms(Room[] rms, Random rng)
         {
             int n, index;
-            Room a, b = null;
+            Room b = null;
             List<Room> lockedRooms = new List<Room>();
             List<Room> singleExitRooms = new List<Room>();
             List<Room> multiExitRooms = new List<Room>();
@@ -360,10 +360,10 @@ namespace DungeonGeneration
                 }
             }
 
-            //Add some amount of single exit rooms to locked rooms, the rest are for keys? For now 50/50
+            //Add some amount of single exit rooms to locked rooms, the rest are for keys
             foreach (Room r in singleExitRooms)
             {
-                if (rng.Next(0,2) == 0)
+                if (rng.Next(0,10) > 4)
                 {
                     lockedRooms.Add(r);
                 }
@@ -517,3 +517,10 @@ namespace DungeonGeneration
         }
     }
 }
+
+//TODO: somehow ensure some rooms will be locked, can't have a dungeon with 0 locked rooms.
+//Possible solution... reject dungeons generated with less than optimal lock amounts. (seems maybe cheaty) (could cause inconsistent generation times)
+
+//TODO: Instead of drawing tiles, build objects for each room dynamically when entered, draw objects
+
+//TODO: Add platform for main character to spawn on. Or otherwise solve the falling entrance problem
