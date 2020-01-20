@@ -25,7 +25,7 @@ namespace DungeonGeneration
         Physics physics = new Physics();
 
         //Textures
-        Texture2D sWall, sPlayer;
+        Texture2D sWall, sPlayer, sLockDoor, sLockDoorV;
         Texture2D hbtex;
 
         public Game1()
@@ -55,6 +55,8 @@ namespace DungeonGeneration
             // TODO: use this.Content to load your game content here
             sWall = Content.Load<Texture2D>("sWallTest");
             sPlayer = Content.Load<Texture2D>("sPlayerTest");
+            sLockDoor = Content.Load<Texture2D>("sLockDoor");
+            sLockDoorV = Content.Load<Texture2D>("sLockDoorVertical");
             testfont = Content.Load<SpriteFont>("Fonts/testfont");
 
             //Hitbox shit
@@ -164,6 +166,18 @@ namespace DungeonGeneration
                         if (player.currentRoom.map[i, j] == 1)
                         {
                             spriteBatch.Draw(sWall, new Vector2(i * tilesize, j * tilesize));
+                        }
+                        switch (player.currentRoom.map[i, j])
+                        {
+                            case 1:
+                                spriteBatch.Draw(sWall, new Vector2(i * tilesize, j * tilesize));
+                                break;
+                            case 2:
+                                spriteBatch.Draw(sLockDoor, new Vector2(i * tilesize, j * tilesize));
+                                break;
+                            case 3:
+                                spriteBatch.Draw(sLockDoorV, new Vector2(i * tilesize, j * tilesize));
+                                break;
                         }
                     }
                 }

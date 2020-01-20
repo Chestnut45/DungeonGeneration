@@ -9,6 +9,12 @@ namespace DungeonGeneration
 {
     public class Generator
     {
+        // ******** LEGEND ********
+        // 0 = Air
+        // 1 = Wall
+        // 2 = Locked door (Horizontal)
+        // 3 = Locked door (Vertical)
+
         //This code is kinda messy, will clean up at a later date
         int createdRooms;
         Room currentRoom;//, previousRoom;
@@ -259,13 +265,13 @@ namespace DungeonGeneration
             //Or not
 
             //Populate
-            populateRooms(rooms);
+            populateRooms(rooms, rng);
 
             //Return all rooms
             return rooms;
         }
 
-        public void populateRooms(Room[] rooms)
+        public void populateRooms(Room[] rooms, Random rng)
         {
             //TODO: Build actual objects for entire dungeon;
 
@@ -285,11 +291,6 @@ namespace DungeonGeneration
                 //r.map = defaultMap;
                 r.id = l;
                 l++;
-            }
-
-            foreach (int b in defaultMap)
-            {
-                Console.WriteLine(b);
             }
 
             for (int i = 0; i < rooms.Length; i++)
@@ -327,10 +328,121 @@ namespace DungeonGeneration
                 }
             }
 
-            foreach (int b in defaultMap)
+            //Lock rooms?
+            lockRooms(rooms, rng);
+        }
+
+        public void lockRooms(Room[] rms, Random rng)
+        {
+            int n, index;
+            Room a, b = null;
+            List<Room> lockedRooms = new List<Room>();
+            List<Room> multiExitRooms = new List<Room>();
+            List<Room> keyRooms = new List<Room>();
+
+            //Loop through every room, add rooms with only one exit to a list
+            for (int i = 1; i < rms.Length; i++)
             {
-                Console.WriteLine(b);
+                //for every single room except the entry room
+                //Count number of exits
+                n = countExits(rms[i]);
+
+                //If only one exit, it can be locked
+                if (n == 1)
+                {
+                    //For now just add to room list
+                    //TODO: make it a random chance to lock the room. It's no fun if every single dead end is locked.
+                    //TODO: make sure you never lock more rooms than we have available key rooms
+                    lockedRooms.Add(rms[i]);
+                } else
+                {
+                    multiExitRooms.Add(rms[i]);
+                }
             }
+
+            //Perform the check to make sure there is enough key rooms for locked rooms
+            while (lockedRooms.Count > multiExitRooms.Count - 6) //This magic number is arbitrary and means almost nothing, it's the amount of rooms that will NOT have a key.
+            {
+                lockedRooms.RemoveAt(rng.Next(0, lockedRooms.Count - 1));
+            }
+
+            //Perform the actual locking of single exit rooms
+            foreach (Room r in lockedRooms)
+            {
+                //Find out adjacent room, add lock to the path leading into current room
+                index = -1;
+                b = null;
+                while (b == null)
+                {
+                    index++;
+                    if (r.adjacentRooms[index] != null)
+                    {
+                        b = r.adjacentRooms[index];
+                    }
+                }
+
+                //When the above loop is over, you'll have the adjacent room in b
+                //And you will also have the index of where the adjacent room is
+                switch (index)
+                {
+                    case 0:
+                        //Left exit (Lock Right of Adjacent)
+                        b.map[b.map.GetLength(0) - 1, b.map.GetLength(1) - 3] = 2;
+                        break;
+
+                    case 1:
+                        //Up exit (Lock Bottom of Adjacent)
+                        b.map[(b.map.GetLength(0) / 2) - 1, b.map.GetLength(1) - 1] = 3;
+                        break;
+
+                    case 2:
+                        //Right exit (Lock Left of Adjacent)
+                        b.map[0, b.map.GetLength(1) - 3] = 2;
+                        break;
+
+                    case 3:
+                        //Bottom exit (Lock Top of Adjacent)
+                        b.map[(b.map.GetLength(0) / 2) - 1, 0] = 3;
+                        break;
+                }
+            }
+
+            //Reverse list to make keys further away
+            multiExitRooms.Reverse();
+
+            //Go through multi exit rooms until you have placed enough keys to unlock every door
+            foreach (Room mer in multiExitRooms)
+            {
+                if (keyRooms.Count >= lockedRooms.Count)
+                {
+                    break;
+                }
+                keyRooms.Add(mer);
+            }
+
+            //Go through every key room and generate a key based on the exits
+            foreach (Room kr in keyRooms)
+            {
+                //TODO: Work out logic of where to place key
+
+            }
+        }
+
+        public int countExits (Room r)
+        {
+            int ind = 0;
+            int count = 0;
+
+            while (ind < 4)
+            {
+                if (r.exits[ind])
+                {
+                    count++;
+                }
+                ind++;
+            }
+
+            return count;
         }
     }
 }
