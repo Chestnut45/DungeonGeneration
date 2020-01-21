@@ -10,7 +10,7 @@ namespace DungeonGeneration
 {
     public class Player
     {
-        public Room currentRoom;
+        public Room currentRoom, pr;
         public Room[] currentDungeon;
         public Texture2D texture;
         public int x, y, xvel, yvel;

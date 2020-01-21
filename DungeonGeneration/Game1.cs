@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace DungeonGeneration
 {
@@ -19,6 +20,7 @@ namespace DungeonGeneration
         Camera cam = new Camera();
 
         //Dungeon stuff
+        List<Wall> walls = new List<Wall>();
 
         //Game objects
         Player player = new Player();
@@ -90,7 +92,7 @@ namespace DungeonGeneration
             ks = Keyboard.GetState();
             if (ks.IsKeyDown(Keys.P) & !prevks.IsKeyDown(Keys.P))
             {
-                player.currentDungeon = generator.generateDungeon(20, true);
+                player.currentDungeon = generator.generateDungeon(25, true);
                 player.currentRoom = player.currentDungeon[0]; //currentDungeon is just a 1d array of rooms that all belong to the current dungeon
                 player.x = player.currentRoom.map.GetLength(0) / 2;
                 player.y = player.currentRoom.map.GetLength(1) / 2;
@@ -131,6 +133,31 @@ namespace DungeonGeneration
                 }
             }
 
+            //After switching rooms, load the objects in the currentRoom's map
+            if (player.pr != player.currentRoom)
+            {
+                //Clear lists for objects to be added to
+                walls.Clear();
+
+
+                //Load room objects
+                for (int i = 0; i < player.currentRoom.map.GetLength(0); i++)
+                {
+                    for (int j = 0; j < player.currentRoom.map.GetLength(1); j++)
+                    {
+                        switch (player.currentRoom.map[i,j])
+                        {
+                            case 1:
+                                //Create wall objects with proper values
+                                walls.Add(new Wall(i, j));
+                                walls[walls.Count-1].texture = sWall;
+                                break;
+                        }
+                    }
+                }
+            }
+            player.pr = player.currentRoom; //After the variable is needed, set the previous room to the current room
+
             if (ks.IsKeyDown(Keys.F) & !prevks.IsKeyDown(Keys.F))
             {
                 graphics.ToggleFullScreen();
@@ -158,6 +185,16 @@ namespace DungeonGeneration
             spriteBatch.Draw(player.texture, new Vector2(player.x*tilesize, player.y*tilesize));
 
             //Go through current room and draw tiles
+
+            if (player.currentRoom != null)
+            {
+                foreach (Wall w in walls)
+                {
+                    spriteBatch.Draw(sWall, new Vector2(w.X * tilesize, w.Y * tilesize));
+                }
+            }
+
+            /*
             if (player.currentRoom != null)
             {
                 for (int i = 0; i < player.currentRoom.map.GetLength(0); i++)
@@ -186,6 +223,8 @@ namespace DungeonGeneration
                     }
                 }
             }
+
+            */
 
             //Draw debug text
             if (player.currentRoom != null)

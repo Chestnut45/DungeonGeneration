@@ -521,6 +521,10 @@ namespace DungeonGeneration
 //TODO: somehow ensure some rooms will be locked, can't have a dungeon with 0 locked rooms.
 //Possible solution... reject dungeons generated with less than optimal lock amounts. (seems maybe cheaty) (could cause inconsistent generation times)
 
-//TODO: Instead of drawing tiles, build objects for each room dynamically when entered, draw objects
+//TODO: Instead of drawing tiles, build objects for each room dynamically when entered, draw objects --- DOORS AND KEYS NEED TO BE DONE NOW
 
 //TODO: Add platform for main character to spawn on. Or otherwise solve the falling entrance problem
+
+//TODO: Possibly mess with dnd advantage roll on outward rooms being preferred for generation
+
+//TODO: Generate "Sections" that are locked off? - might require BIG rework of how dungeons work / are generated
