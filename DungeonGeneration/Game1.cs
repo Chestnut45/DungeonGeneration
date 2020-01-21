@@ -30,7 +30,7 @@ namespace DungeonGeneration
 
         //Textures
         Texture2D sWall, sPlayer, sLockDoor, sLockDoorV, sKey, sChestClosed, sChestOpen;
-        Texture2D hbtex;
+        Texture2D hbtex, hbtexWall;
 
         public Game1()
         {
@@ -73,6 +73,11 @@ namespace DungeonGeneration
             Color[] c = new Color[1];
             c[0] = Color.FromNonPremultiplied(255, 0, 0, transparency_amount);
             hbtex.SetData<Color>(c);
+
+            hbtexWall = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            Color[] c1 = new Color[1];
+            c1[0] = Color.FromNonPremultiplied(0, 0, 255, transparency_amount);
+            hbtexWall.SetData<Color>(c1);
         }
 
         protected override void UnloadContent()
@@ -154,8 +159,8 @@ namespace DungeonGeneration
                         {
                             case 1:
                                 //Create wall objects with proper values
-                                walls.Add(new Wall(i, j));
-                                walls[walls.Count - 1].texture = sWall;
+                                walls.Add(new Wall(i, j, sWall));
+                                //walls[walls.Count - 1].texture = sWall;
                                 break;
 
                             case 2:
@@ -211,12 +216,14 @@ namespace DungeonGeneration
             spriteBatch.Draw(player.texture, new Vector2(player.x*tilesize, player.y*tilesize));
 
             //Go through current room and draw tiles
-
             if (player.currentRoom != null)
             {
                 foreach (Wall w in walls)
                 {
                     spriteBatch.Draw(w.texture, new Vector2(w.X * tilesize, w.Y * tilesize));
+
+                    //Draw hitboxes (debug)
+                    spriteBatch.Draw(hbtexWall, w.boundingBox, Color.White);
                 }
 
                 foreach (Door d in doors)
