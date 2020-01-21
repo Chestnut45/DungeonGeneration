@@ -21,13 +21,15 @@ namespace DungeonGeneration
 
         //Dungeon stuff
         List<Wall> walls = new List<Wall>();
+        List<Door> doors = new List<Door>();
+        List<Chest> chests = new List<Chest>();
 
         //Game objects
         Player player = new Player();
         Physics physics = new Physics();
 
         //Textures
-        Texture2D sWall, sPlayer, sLockDoor, sLockDoorV, sKey;
+        Texture2D sWall, sPlayer, sLockDoor, sLockDoorV, sKey, sChestClosed, sChestOpen;
         Texture2D hbtex;
 
         public Game1()
@@ -61,6 +63,8 @@ namespace DungeonGeneration
             sLockDoorV = Content.Load<Texture2D>("sLockDoorVertical");
             testfont = Content.Load<SpriteFont>("Fonts/testfont");
             sKey = Content.Load<Texture2D>("sKey");
+            sChestClosed = Content.Load<Texture2D>("sChestClosed");
+            sChestOpen = Content.Load<Texture2D>("sChestOpen");
 
             //Hitbox shit
             //Make one pixel of color and transparency
@@ -138,7 +142,8 @@ namespace DungeonGeneration
             {
                 //Clear lists for objects to be added to
                 walls.Clear();
-
+                doors.Clear();
+                chests.Clear();
 
                 //Load room objects
                 for (int i = 0; i < player.currentRoom.map.GetLength(0); i++)
@@ -150,7 +155,28 @@ namespace DungeonGeneration
                             case 1:
                                 //Create wall objects with proper values
                                 walls.Add(new Wall(i, j));
-                                walls[walls.Count-1].texture = sWall;
+                                walls[walls.Count - 1].texture = sWall;
+                                break;
+
+                            case 2:
+                                //Create normal locked doors
+                                doors.Add(new Door(i, j));
+                                doors[doors.Count - 1].texture = sLockDoor;
+                                break;
+
+                            case 3:
+                                //Create vertical locked doors
+                                doors.Add(new Door(i, j));
+                                doors[doors.Count - 1].vertical = true;
+                                doors[doors.Count - 1].texture = sLockDoorV;
+                                break;
+
+                            case 4:
+                                //Create key chests
+                                chests.Add(new Chest(i, j));
+                                chests[chests.Count - 1].texture = sChestClosed;
+                                chests[chests.Count - 1].contents = new Drop(0, 0, Drop.dropType.key); //Create a new drop of type key and make the chest "contain" it.
+                                //Drop dormancy TODO?
                                 break;
                         }
                     }
@@ -190,41 +216,19 @@ namespace DungeonGeneration
             {
                 foreach (Wall w in walls)
                 {
-                    spriteBatch.Draw(sWall, new Vector2(w.X * tilesize, w.Y * tilesize));
+                    spriteBatch.Draw(w.texture, new Vector2(w.X * tilesize, w.Y * tilesize));
                 }
-            }
 
-            /*
-            if (player.currentRoom != null)
-            {
-                for (int i = 0; i < player.currentRoom.map.GetLength(0); i++)
+                foreach (Door d in doors)
                 {
-                    for (int j = 0; j < player.currentRoom.map.GetLength(1); j++)
-                    {
-                        if (player.currentRoom.map[i, j] == 1)
-                        {
-                            spriteBatch.Draw(sWall, new Vector2(i * tilesize, j * tilesize));
-                        }
-                        switch (player.currentRoom.map[i, j])
-                        {
-                            case 1:
-                                spriteBatch.Draw(sWall, new Vector2(i * tilesize, j * tilesize));
-                                break;
-                            case 2:
-                                spriteBatch.Draw(sLockDoor, new Vector2(i * tilesize, j * tilesize));
-                                break;
-                            case 3:
-                                spriteBatch.Draw(sLockDoorV, new Vector2(i * tilesize, j * tilesize));
-                                break;
-                            case 4:
-                                spriteBatch.Draw(sKey, new Vector2(i * tilesize, j * tilesize));
-                                break;
-                        }
-                    }
+                    spriteBatch.Draw(d.texture, new Vector2(d.X * tilesize, d.Y * tilesize));
+                }
+
+                foreach (Chest c in chests)
+                {
+                    spriteBatch.Draw(c.texture, new Vector2(c.X * tilesize, c.Y * tilesize));
                 }
             }
-
-            */
 
             //Draw debug text
             if (player.currentRoom != null)

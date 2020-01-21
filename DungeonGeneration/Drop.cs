@@ -7,16 +7,22 @@ using System.Threading.Tasks;
 
 namespace DungeonGeneration
 {
-    public class Door
+    public class Drop
     {
+        public enum dropType
+        {
+            key
+        }
+
         public int X, Y;
         public Texture2D texture;
-        public bool vertical = false;
+        public dropType drop;
 
-        public Door(int x, int y)
+        public Drop(int x, int y, dropType Drop)
         {
             X = x;
             Y = y;
+            drop = Drop;
         }
     }
 }

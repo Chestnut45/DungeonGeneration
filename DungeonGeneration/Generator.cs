@@ -166,7 +166,8 @@ namespace DungeonGeneration
                     int r1 = rng.Next(notDeadRooms.Count);
                     int r2 = rng.Next(notDeadRooms.Count);
                     int r3 = rng.Next(notDeadRooms.Count);
-                    roomToCheck = Math.Max(r1, Math.Max(r2, r3));
+                    //roomToCheck = Math.Max(r1, Math.Max(r2, r3)); //max of 3 rolls, not clustered enough?
+                    roomToCheck = Math.Max(r2, r3);
                     currentRoom = notDeadRooms[roomToCheck];
 
                     //Check free exits

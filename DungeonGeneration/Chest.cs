@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace DungeonGeneration
 {
-    public class Door
+    public class Chest
     {
         public int X, Y;
         public Texture2D texture;
-        public bool vertical = false;
+        public Drop contents;
 
-        public Door(int x, int y)
+        public Chest(int x, int y)
         {
             X = x;
             Y = y;
