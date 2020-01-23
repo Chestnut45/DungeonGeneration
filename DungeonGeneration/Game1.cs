@@ -101,10 +101,10 @@ namespace DungeonGeneration
             ks = Keyboard.GetState();
             if (ks.IsKeyDown(Keys.P) & !prevks.IsKeyDown(Keys.P))
             {
-                player.currentDungeon = generator.generateDungeon(25, true);
+                player.currentDungeon = generator.generateDungeon(25, false);
                 player.currentRoom = player.currentDungeon[0]; //currentDungeon is just a 1d array of rooms that all belong to the current dungeon
-                player.x = player.currentRoom.map.GetLength(0) / 2;
-                player.y = player.currentRoom.map.GetLength(1) / 2;
+                player.x = (player.currentRoom.map.GetLength(0) / 2) * tilesize;
+                player.y = (player.currentRoom.map.GetLength(1) / 2) * tilesize;
 
                 //TODO: Build dungeon room objects. Load all in memory or one room / dungeon at a time?
             }
@@ -159,26 +159,26 @@ namespace DungeonGeneration
                         {
                             case 1:
                                 //Create wall objects with proper values
-                                walls.Add(new Wall(i, j, sWall));
+                                walls.Add(new Wall(i * tilesize, j * tilesize, sWall));
                                 //walls[walls.Count - 1].texture = sWall;
                                 break;
 
                             case 2:
                                 //Create normal locked doors
-                                doors.Add(new Door(i, j));
+                                doors.Add(new Door(i * tilesize, j * tilesize));
                                 doors[doors.Count - 1].texture = sLockDoor;
                                 break;
 
                             case 3:
                                 //Create vertical locked doors
-                                doors.Add(new Door(i, j));
+                                doors.Add(new Door(i * tilesize, j * tilesize));
                                 doors[doors.Count - 1].vertical = true;
                                 doors[doors.Count - 1].texture = sLockDoorV;
                                 break;
 
                             case 4:
                                 //Create key chests
-                                chests.Add(new Chest(i, j));
+                                chests.Add(new Chest(i * tilesize, j * tilesize));
                                 chests[chests.Count - 1].texture = sChestClosed;
                                 chests[chests.Count - 1].contents = new Drop(0, 0, Drop.dropType.key); //Create a new drop of type key and make the chest "contain" it.
                                 //Drop dormancy TODO?
@@ -189,15 +189,34 @@ namespace DungeonGeneration
             }
             player.pr = player.currentRoom; //After the variable is needed, set the previous room to the current room
 
+            //Deal with physics
+            //This is bad, move this to player update
+            if (ks.IsKeyDown(Keys.A))
+            {
+                player.xvel = -1;
+            }
+            if (ks.IsKeyDown(Keys.D))
+            {
+                player.xvel = 1;
+            }
+            if (!ks.IsKeyDown(Keys.D) && !ks.IsKeyDown(Keys.A))
+            {
+                player.xvel = 0;
+            }
+            if (ks.IsKeyDown(Keys.W) & !prevks.IsKeyDown(Keys.W))
+            {
+                player.yvel = -5;
+                player.grounded = false;
+            }
+
             if (ks.IsKeyDown(Keys.F) & !prevks.IsKeyDown(Keys.F))
             {
                 graphics.ToggleFullScreen();
             }
 
-            //Update camera
+            //Update other instances
             cam.Update();
-            //physics.Update(player);
-            player.Update();
+            physics.Update(player, walls);
 
             //Update previous keyboard state
             prevks = ks;
@@ -213,14 +232,14 @@ namespace DungeonGeneration
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null, cam.ViewMatrix);
 
             //Draw Player
-            spriteBatch.Draw(player.texture, new Vector2(player.x*tilesize, player.y*tilesize));
+            spriteBatch.Draw(player.texture, new Vector2(player.x, player.y));
 
             //Go through current room and draw tiles
             if (player.currentRoom != null)
             {
                 foreach (Wall w in walls)
                 {
-                    spriteBatch.Draw(w.texture, new Vector2(w.X * tilesize, w.Y * tilesize));
+                    spriteBatch.Draw(w.texture, new Vector2(w.X, w.Y));
 
                     //Draw hitboxes (debug)
                     spriteBatch.Draw(hbtexWall, w.boundingBox, Color.White);
@@ -228,12 +247,12 @@ namespace DungeonGeneration
 
                 foreach (Door d in doors)
                 {
-                    spriteBatch.Draw(d.texture, new Vector2(d.X * tilesize, d.Y * tilesize));
+                    spriteBatch.Draw(d.texture, new Vector2(d.X, d.Y));
                 }
 
                 foreach (Chest c in chests)
                 {
-                    spriteBatch.Draw(c.texture, new Vector2(c.X * tilesize, c.Y * tilesize));
+                    spriteBatch.Draw(c.texture, new Vector2(c.X, c.Y));
                 }
             }
 

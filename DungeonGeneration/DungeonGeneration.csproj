@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Camera.cs" />
     <Compile Include="Chest.cs" />
+    <Compile Include="CollisionHelperAABB.cs" />
     <Compile Include="Door.cs" />
     <Compile Include="Drop.cs" />
     <Compile Include="Game1.cs" />

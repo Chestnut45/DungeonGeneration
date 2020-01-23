@@ -19,7 +19,7 @@ namespace DungeonGeneration
             X = x;
             Y = y;
             texture = t;
-            boundingBox = new Rectangle(x * 8, y * 8, texture.Width, texture.Height);
+            boundingBox = new Rectangle(x, y, texture.Width, texture.Height);
         }
     }
 }

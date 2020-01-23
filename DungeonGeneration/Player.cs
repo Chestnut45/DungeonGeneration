@@ -14,7 +14,10 @@ namespace DungeonGeneration
         public Room[] currentDungeon;
         public Texture2D texture;
         public int x, y, xvel, yvel;
+        public Vector2 velocity = new Vector2(0);
         public Rectangle boundingBox = new Rectangle();
+        public Rectangle previousBoundingBox = new Rectangle();
+        public bool grounded = false;
 
         public Player()
         {
@@ -23,8 +26,9 @@ namespace DungeonGeneration
 
         public void Update()
         {
-            boundingBox.X = (x * 8) + 2;
-            boundingBox.Y = (y * 8) + 5;
+            //Update boundingBox
+            boundingBox.X = x + 2;
+            boundingBox.Y = y + 5;
             boundingBox.Width = texture.Width - 3;
             boundingBox.Height = texture.Height - 5;
         }
