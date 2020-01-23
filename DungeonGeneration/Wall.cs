@@ -13,6 +13,7 @@ namespace DungeonGeneration
         public int X, Y;
         public Texture2D texture;
         public Rectangle boundingBox = new Rectangle();
+        public int distanceToPlayer;
 
         public Wall(int x, int y, Texture2D t)
         {

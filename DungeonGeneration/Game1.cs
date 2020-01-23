@@ -190,23 +190,21 @@ namespace DungeonGeneration
             player.pr = player.currentRoom; //After the variable is needed, set the previous room to the current room
 
             //Deal with physics
-            //This is bad, move this to player update
             if (ks.IsKeyDown(Keys.A))
             {
-                player.xvel = -1;
+                player.xacc = -1;
             }
             if (ks.IsKeyDown(Keys.D))
             {
-                player.xvel = 1;
+                player.xacc = 1;
             }
             if (!ks.IsKeyDown(Keys.D) && !ks.IsKeyDown(Keys.A))
             {
-                player.xvel = 0;
+                player.xacc = 0;
             }
             if (ks.IsKeyDown(Keys.W) & !prevks.IsKeyDown(Keys.W))
             {
-                player.yvel = -5;
-                player.grounded = false;
+                player.yvel = -7;
             }
 
             if (ks.IsKeyDown(Keys.F) & !prevks.IsKeyDown(Keys.F))
@@ -216,8 +214,11 @@ namespace DungeonGeneration
 
             //Update other instances
             cam.Update();
-            physics.Update(player, walls);
-
+            if (player.currentDungeon != null)
+            {
+                physics.Update(player, walls);
+            }
+            
             //Update previous keyboard state
             prevks = ks;
             base.Update(gameTime);
