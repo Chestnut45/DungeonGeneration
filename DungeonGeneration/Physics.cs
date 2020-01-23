@@ -12,9 +12,9 @@ namespace DungeonGeneration
         int gravCoefficient = 1;
         int maxYvel = 3;
         int maxXvel = 2;
+        bool done = false;
         CollisionSide side;
         Rectangle fr;
-        Vector2 cp;
         List<Wall> collisionsToResolve = new List<Wall>();
 
         public void Update(Player p, List<Wall> walls)
@@ -55,7 +55,6 @@ namespace DungeonGeneration
             p.xvel = MathHelper.Clamp(p.xvel, -maxXvel, maxXvel);
 
             //Check for FUTURE collision
-            //AS OF RIGHT NOW, THIS ONLY WORKS IF THE PLAYER DOES NOT MOVE FASTER THAN 1PX IN 1 FRAME, TODO: UPDATE THIS
             collisionsToResolve.Clear();
             fr = new Rectangle(p.boundingBox.X + p.xvel, p.boundingBox.Y + p.yvel, p.boundingBox.Width, p.boundingBox.Height);
             for (int i = 0; i < walls.Count; i++)
@@ -69,29 +68,77 @@ namespace DungeonGeneration
 
             collisionsToResolve = collisionsToResolve.OrderBy(o => o.distanceToPlayer).ToList();
 
-            foreach (Wall w in collisionsToResolve)
+            for (int w = 0; w < collisionsToResolve.Count; w++)
             {
-                side = CollisionHelperAABB.GetCollisionSide(p.boundingBox, w.boundingBox, new Vector2(p.xvel, p.yvel));
-                
+                side = CollisionHelperAABB.GetCollisionSide(p.boundingBox, collisionsToResolve[w].boundingBox, new Vector2(p.xvel, p.yvel));
+
                 switch (side)
                 {
-                    case CollisionSide.Top:
-                        p.yvel = 0;
-                        break;
-                    case CollisionSide.Bottom:
-                        p.yvel = 0;
-                        break;
                     case CollisionSide.Left:
-                        p.xvel = 0;
+                        while (fr.Intersects(collisionsToResolve[w].boundingBox))
+                        {
+                            p.xvel--;
+                            p.Update();
+                            fr = new Rectangle(p.boundingBox.X + p.xvel, p.boundingBox.Y + p.yvel, p.boundingBox.Width, p.boundingBox.Height);
+                        }
                         break;
                     case CollisionSide.Right:
-                        p.xvel = 0;
+                        while (fr.Intersects(collisionsToResolve[w].boundingBox))
+                        {
+                            p.xvel++;
+                            p.Update();
+                            fr = new Rectangle(p.boundingBox.X + p.xvel, p.boundingBox.Y + p.yvel, p.boundingBox.Width, p.boundingBox.Height);
+                        }
                         break;
+                    case CollisionSide.Top:
+                        while (fr.Intersects(collisionsToResolve[w].boundingBox))
+                        {
+                            p.yvel--;
+                            p.Update();
+                            fr = new Rectangle(p.boundingBox.X + p.xvel, p.boundingBox.Y + p.yvel, p.boundingBox.Width, p.boundingBox.Height);
+                        }
+                        break;
+                    case CollisionSide.Bottom:
+                        while (fr.Intersects(collisionsToResolve[w].boundingBox))
+                        {
+                            p.yvel++;
+                            p.Update();
+                            fr = new Rectangle(p.boundingBox.X + p.xvel, p.boundingBox.Y + p.yvel, p.boundingBox.Width, p.boundingBox.Height);
+                        }
+                        break;
+                }
+                p.Update();
+
+                
+                for (int i = 0; i < walls.Count; i++)
+                {
+                    if (fr.Intersects(walls[i].boundingBox))
+                    {
+                        collisionsToResolve.RemoveAt(w);
+                        walls[i].distanceToPlayer = (int)CollisionHelperAABB.GetDistanceSquared(p.boundingBox, walls[i].boundingBox);
+                        collisionsToResolve.Add(walls[i]);
+                        collisionsToResolve = collisionsToResolve.OrderBy(o => o.distanceToPlayer).ToList();
+                        w = 0;
+                    }
+                }
+                
+
+                done = true;
+                for (int i = 0; i < collisionsToResolve.Count; i++)
+                {
+                    if (fr.Intersects(collisionsToResolve[i].boundingBox))
+                    {
+                        done = false;
+                    }
+                }
+
+                if (done)
+                {
+                    break;
                 }
             }
 
-            //Actually move player to where they need to be
-
+            //Update player position
             p.y += p.yvel;
             p.x += p.xvel;
 
