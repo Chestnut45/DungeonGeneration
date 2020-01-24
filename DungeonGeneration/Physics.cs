@@ -107,8 +107,6 @@ namespace DungeonGeneration
                         }
                         break;
                 }
-                p.Update();
-
                 
                 for (int i = 0; i < walls.Count; i++)
                 {
@@ -121,7 +119,6 @@ namespace DungeonGeneration
                         w = 0;
                     }
                 }
-                
 
                 done = true;
                 for (int i = 0; i < collisionsToResolve.Count; i++)
@@ -142,6 +139,7 @@ namespace DungeonGeneration
             p.y += p.yvel;
             p.x += p.xvel;
 
+            //Update hitbox
             p.Update();
 
             //After player physics has been handled, set the previousBoundingBox Rectangle

@@ -18,18 +18,20 @@ namespace DungeonGeneration
         int tilesize = 8;
         SpriteFont testfont;
         Camera cam = new Camera();
+        public Viewport viewport;
 
         //Dungeon stuff
         List<Wall> walls = new List<Wall>();
         List<Door> doors = new List<Door>();
         List<Chest> chests = new List<Chest>();
+        List<Ladder> ladders = new List<Ladder>();
 
         //Game objects
         Player player = new Player();
         Physics physics = new Physics();
 
         //Textures
-        Texture2D sWall, sPlayer, sLockDoor, sLockDoorV, sKey, sChestClosed, sChestOpen;
+        Texture2D sWall, sPlayer, sLockDoor, sLockDoorV, sKey, sChestClosed, sChestOpen, sLadder;
         Texture2D hbtex, hbtexWall;
 
         public Game1()
@@ -48,6 +50,8 @@ namespace DungeonGeneration
             IsMouseVisible = true;
             graphics.ApplyChanges();
 
+            viewport = new Viewport(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
+
             base.Initialize();
         }
 
@@ -65,6 +69,7 @@ namespace DungeonGeneration
             sKey = Content.Load<Texture2D>("sKey");
             sChestClosed = Content.Load<Texture2D>("sChestClosed");
             sChestOpen = Content.Load<Texture2D>("sChestOpen");
+            sLadder = Content.Load<Texture2D>("sLadder");
 
             //Hitbox shit
             //Make one pixel of color and transparency
@@ -149,6 +154,7 @@ namespace DungeonGeneration
                 walls.Clear();
                 doors.Clear();
                 chests.Clear();
+                ladders.Clear();
 
                 //Load room objects
                 for (int i = 0; i < player.currentRoom.map.GetLength(0); i++)
@@ -183,6 +189,11 @@ namespace DungeonGeneration
                                 chests[chests.Count - 1].contents = new Drop(0, 0, Drop.dropType.key); //Create a new drop of type key and make the chest "contain" it.
                                 //Drop dormancy TODO?
                                 break;
+                            case 5:
+                                //Create normal locked doors
+                                ladders.Add(new Ladder(i * tilesize, j * tilesize));
+                                ladders[ladders.Count - 1].texture = sLadder;
+                                break;
                         }
                     }
                 }
@@ -214,6 +225,7 @@ namespace DungeonGeneration
 
             //Update other instances
             cam.Update();
+
             if (player.currentDungeon != null)
             {
                 physics.Update(player, walls);
@@ -232,9 +244,6 @@ namespace DungeonGeneration
             // TODO: Add your drawing code here
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null, cam.ViewMatrix);
 
-            //Draw Player
-            spriteBatch.Draw(player.texture, new Vector2(player.x, player.y));
-
             //Go through current room and draw tiles
             if (player.currentRoom != null)
             {
@@ -246,14 +255,22 @@ namespace DungeonGeneration
                     spriteBatch.Draw(hbtexWall, w.boundingBox, Color.White);
                 }
 
-                foreach (Door d in doors)
-                {
-                    spriteBatch.Draw(d.texture, new Vector2(d.X, d.Y));
-                }
-
                 foreach (Chest c in chests)
                 {
                     spriteBatch.Draw(c.texture, new Vector2(c.X, c.Y));
+                }
+
+                foreach (Ladder l in ladders)
+                {
+                    spriteBatch.Draw(l.texture, new Vector2(l.X, l.Y));
+                }
+
+                //Draw Player
+                spriteBatch.Draw(player.texture, new Vector2(player.x, player.y));
+
+                foreach (Door d in doors)
+                {
+                    spriteBatch.Draw(d.texture, new Vector2(d.X, d.Y));
                 }
             }
 

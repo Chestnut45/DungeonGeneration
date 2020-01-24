@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,8 @@ namespace DungeonGeneration
     public class Camera
     {
         Matrix viewMatrix;
-        float scale = 5.0f;
+        float scale = 6.0f;
+        Vector2 position = Vector2.Zero;
 
         public Matrix ViewMatrix
         {
@@ -19,7 +21,7 @@ namespace DungeonGeneration
 
         public void Update()
         {
-            viewMatrix = Matrix.CreateTranslation(new Vector3(0, 0, 0)) * Matrix.CreateScale(scale);
+            viewMatrix = Matrix.CreateTranslation(new Vector3(-position.X, -position.Y, 0)) * Matrix.CreateScale(scale);
         }
     }
 }

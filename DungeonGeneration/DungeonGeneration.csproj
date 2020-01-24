@@ -63,6 +63,7 @@
     <Compile Include="Drop.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Generator.cs" />
+    <Compile Include="Ladder.cs" />
     <Compile Include="Physics.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
