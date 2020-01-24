@@ -27,7 +27,7 @@ namespace DungeonGeneration
         bool platform;
 
         //Room map size
-        public int[,] defaultMap = new int[25, 15];
+        public int[,] defaultMap = new int[32, 18];
 
         public void generateDefaultMap()
         {
@@ -319,19 +319,26 @@ namespace DungeonGeneration
                     //Actual up exit
                     rooms[i].map[(rooms[i].map.GetLength(0) / 2), 0] = 0;
                     rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, 0] = 0;
-                    rooms[i].map[(rooms[i].map.GetLength(0) / 2) + 1, 0] = 0;
+                    //rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 2, 0] = 0;
+                    //rooms[i].map[(rooms[i].map.GetLength(0) / 2) + 1, 0] = 0;
 
                     //Middle platform - always there
                     rooms[i].map[rooms[i].map.GetLength(0) / 2, rooms[i].map.GetLength(1) / 2] = 1;
                     rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, rooms[i].map.GetLength(1) / 2] = 1;
+                    rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 2, rooms[i].map.GetLength(1) / 2] = 1;
                     rooms[i].map[(rooms[i].map.GetLength(0) / 2) + 1, rooms[i].map.GetLength(1) / 2] = 1;
 
                     //Middle ladder - always there
-                    rooms[i].map[rooms[i].map.GetLength(0) / 2, 0] = 5;
-                    inc = 1;
+                    inc = 0;
                     while (rooms[i].map[rooms[i].map.GetLength(0) / 2, 0 + inc] != 1)
                     {
                         rooms[i].map[rooms[i].map.GetLength(0) / 2, 0 + inc] = 5;
+                        inc++;
+                    }
+                    inc = 0;
+                    while (rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, 0 + inc] != 1)
+                    {
+                        rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, 0 + inc] = 5;
                         inc++;
                     }
 
@@ -340,11 +347,11 @@ namespace DungeonGeneration
                     if (rng.Next(0, 6) == 0)
                     {
                         //Left Ladder
-                        rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 2, rooms[i].map.GetLength(1) / 2] = 5;
+                        rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 3, rooms[i].map.GetLength(1) / 2] = 5;
                         inc = 1;
-                        while (rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 2, (rooms[i].map.GetLength(1) / 2) + inc] != 1)
+                        while (rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 3, (rooms[i].map.GetLength(1) / 2) + inc] != 1)
                         {
-                            rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 2, (rooms[i].map.GetLength(1) / 2) + inc] = 5;
+                            rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 3, (rooms[i].map.GetLength(1) / 2) + inc] = 5;
                             inc++;
                         }
                         platform = false;
@@ -367,9 +374,9 @@ namespace DungeonGeneration
                         if (rng.Next(0, 2) == 0)
                         {
                             //Left
+                            rooms[i].map[rooms[i].map.GetLength(0) / 3, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
                             rooms[i].map[(rooms[i].map.GetLength(0) / 3) - 1, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
                             rooms[i].map[(rooms[i].map.GetLength(0) / 3) - 2, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
-                            rooms[i].map[(rooms[i].map.GetLength(0) / 3) - 3, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
                         } else
                         {
                             //Right

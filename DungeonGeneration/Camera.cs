@@ -11,7 +11,7 @@ namespace DungeonGeneration
     public class Camera
     {
         Matrix viewMatrix;
-        float scale = 6.0f;
+        float scale = 5.0f;
         Vector2 position = Vector2.Zero;
 
         public Matrix ViewMatrix
@@ -19,9 +19,20 @@ namespace DungeonGeneration
             get { return viewMatrix; }
         }
 
-        public void Update()
+        public void Update(Player p, GraphicsDeviceManager g)
         {
-            viewMatrix = Matrix.CreateTranslation(new Vector3(-position.X, -position.Y, 0)) * Matrix.CreateScale(scale);
+            /*
+            position.X = p.x - (g.GraphicsDevice.Viewport.Width / 2) / scale;
+            position.Y = p.y - (g.GraphicsDevice.Viewport.Height / 2) / scale;
+            
+            if (p.currentRoom != null)
+            {
+                position.X = MathHelper.Clamp(position.X, 0, (p.currentRoom.map.GetLength(0)*8) - g.GraphicsDevice.Viewport.Width);
+                position.Y = MathHelper.Clamp(position.Y, 0, (p.currentRoom.map.GetLength(1)*8) - g.GraphicsDevice.Viewport.Height);
+            }
+            */
+            
+            viewMatrix = Matrix.CreateTranslation(new Vector3(-position.X, -position.Y, 0)) * Matrix.CreateScale(new Vector3(scale, scale, 0));
         }
     }
 }

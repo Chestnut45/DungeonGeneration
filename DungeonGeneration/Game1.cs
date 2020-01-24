@@ -4,6 +4,9 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
 using System.Collections.Generic;
+using MonoGame.Extended;
+using MonoGame.Extended.Graphics;
+using MonoGame.Extended.ViewportAdapters;
 
 namespace DungeonGeneration
 {
@@ -18,7 +21,6 @@ namespace DungeonGeneration
         int tilesize = 8;
         SpriteFont testfont;
         Camera cam = new Camera();
-        public Viewport viewport;
 
         //Dungeon stuff
         List<Wall> walls = new List<Wall>();
@@ -49,8 +51,6 @@ namespace DungeonGeneration
             graphics.IsFullScreen = false;
             IsMouseVisible = true;
             graphics.ApplyChanges();
-
-            viewport = new Viewport(0, 0, graphics.PreferredBackBufferWidth, graphics.PreferredBackBufferHeight);
 
             base.Initialize();
         }
@@ -224,7 +224,7 @@ namespace DungeonGeneration
             }
 
             //Update other instances
-            cam.Update();
+            cam.Update(player, graphics);
 
             if (player.currentDungeon != null)
             {
