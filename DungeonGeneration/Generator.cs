@@ -131,7 +131,7 @@ namespace DungeonGeneration
             //Seed code
             if(useRandomSeed)
             {
-                seed = DateTime.Now.Millisecond.ToString();
+                seed = ((DateTime.Now.Millisecond + 1) * (DateTime.Now.Millisecond + 1)).ToString(); //Better seed
             } else
             {
                 seed = "01234567";
@@ -301,7 +301,7 @@ namespace DungeonGeneration
             for (int i = 0; i < rooms.Length; i++)
             {
                 //Add initial room platform
-                if (i==0 && !rooms[i].exits[1])
+                if (i==0 && rooms[i].exits[3])
                 {
                     rooms[i].map[rooms[i].map.GetLength(0) / 2, rooms[i].map.GetLength(1) - 4] = 1;
                     rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, rooms[i].map.GetLength(1) - 4] = 1;
@@ -310,12 +310,14 @@ namespace DungeonGeneration
                 //Add (or rather subtract) exits
                 if (rooms[i].exits[0]) //LEFT EXIT
                 {
+                    //TODO: Choose between different y levels
                     rooms[i].map[0, rooms[i].map.GetLength(1) - 2] = 0;
                     rooms[i].map[0, rooms[i].map.GetLength(1) - 3] = 0;
                 }
 
                 if (rooms[i].exits[1]) //UP EXIT
                 {
+                    //TODO: Choose random x coordinate
                     //Actual up exit
                     rooms[i].map[(rooms[i].map.GetLength(0) / 2), 0] = 0;
                     rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, 0] = 0;
@@ -389,12 +391,14 @@ namespace DungeonGeneration
 
                 if (rooms[i].exits[2]) //RIGHT
                 {
+                    //Choose random y position
                     rooms[i].map[rooms[i].map.GetLength(0) - 1, rooms[i].map.GetLength(1) - 2] = 0;
                     rooms[i].map[rooms[i].map.GetLength(0) - 1, rooms[i].map.GetLength(1) - 3] = 0;
                 }
 
                 if (rooms[i].exits[3]) //DOWN EXIT
                 {
+                    //Choose random x position
                     rooms[i].map[(rooms[i].map.GetLength(0) / 2), rooms[i].map.GetLength(1) - 1] = 0;
                     rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, rooms[i].map.GetLength(1) - 1] = 0;
                     rooms[i].map[(rooms[i].map.GetLength(0) / 2) + 1, rooms[i].map.GetLength(1) - 1] = 0;

@@ -106,10 +106,10 @@ namespace DungeonGeneration
             ks = Keyboard.GetState();
             if (ks.IsKeyDown(Keys.P) & !prevks.IsKeyDown(Keys.P))
             {
-                player.currentDungeon = generator.generateDungeon(25, false);
+                player.currentDungeon = generator.generateDungeon(25, true);
                 player.currentRoom = player.currentDungeon[0]; //currentDungeon is just a 1d array of rooms that all belong to the current dungeon
                 player.x = (player.currentRoom.map.GetLength(0) / 2) * tilesize;
-                player.y = (player.currentRoom.map.GetLength(1) / 2) * tilesize;
+                player.y = ((player.currentRoom.map.GetLength(1) / 2) + 1) * tilesize;
 
                 //TODO: Build dungeon room objects. Load all in memory or one room / dungeon at a time?
             }
