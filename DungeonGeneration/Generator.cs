@@ -228,6 +228,7 @@ namespace DungeonGeneration
                             //This is where to put the code to randomize exit locations.
                             //create exit in current room
                             int el = 0;
+                            int vel = 0;
                             switch (exitIndex)
                             {
                                 case 0:
@@ -237,6 +238,8 @@ namespace DungeonGeneration
                                     break;
                                 case 1:
                                     //Up
+                                    vel = rng.Next(0, 2);
+                                    currentRoom.exitLocation[1] = vel;
                                     break;
                                 case 2:
                                     //Right
@@ -245,6 +248,8 @@ namespace DungeonGeneration
                                     break;
                                 case 3:
                                     //Down
+                                    vel = rng.Next(0, 2);
+                                    currentRoom.exitLocation[3] = vel;
                                     break;
                             }
                             currentRoom.exits[exitIndex] = true; //Create the exit from the current room
@@ -281,6 +286,7 @@ namespace DungeonGeneration
                                     break;
                                 case 1:
                                     //Up
+                                    rooms[createdRooms].exitLocation[1] = vel;
                                     break;
                                 case 2:
                                     //Right
@@ -288,6 +294,7 @@ namespace DungeonGeneration
                                     break;
                                 case 3:
                                     //Down
+                                    rooms[createdRooms].exitLocation[3] = vel;
                                     break;
                             }
 
@@ -340,14 +347,6 @@ namespace DungeonGeneration
 
             for (int i = 0; i < rooms.Length; i++)
             {
-                //Add initial room platform
-                if (i==0 && rooms[i].exits[3]) //If first room and down exit
-                {
-                    rooms[i].map[rooms[i].map.GetLength(0) / 2, rooms[i].map.GetLength(1) - 4] = 1;
-                    rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, rooms[i].map.GetLength(1) - 4] = 1;
-                    rooms[i].map[(rooms[i].map.GetLength(0) / 2) + 1, rooms[i].map.GetLength(1) - 4] = 1;
-                }
-
                 //Add (or rather subtract) exits
                 if (rooms[i].exits[0]) //LEFT EXIT
                 {
@@ -372,75 +371,136 @@ namespace DungeonGeneration
 
                 if (rooms[i].exits[1]) //UP EXIT
                 {
-                    //TODO: Choose random x coordinate
-                    //Actual up exit
-                    rooms[i].map[(rooms[i].map.GetLength(0) / 2), 0] = 0;
-                    rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, 0] = 0;
-                    //rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 2, 0] = 0;
-                    //rooms[i].map[(rooms[i].map.GetLength(0) / 2) + 1, 0] = 0;
+                    switch (rooms[i].exitLocation[1])
+                    {
+                        case 0:
+                            //Left side
+                            //Exit
+                            rooms[i].map[12, 0] = 0;
+                            rooms[i].map[10, 0] = 0;
+                            rooms[i].map[11, 0] = 0;
 
-                    //Middle platform - always there
-                    rooms[i].map[rooms[i].map.GetLength(0) / 2, rooms[i].map.GetLength(1) / 2] = 1;
-                    rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, rooms[i].map.GetLength(1) / 2] = 1;
-                    rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 2, rooms[i].map.GetLength(1) / 2] = 1;
-                    rooms[i].map[(rooms[i].map.GetLength(0) / 2) + 1, rooms[i].map.GetLength(1) / 2] = 1;
+                            //Platform
+                            rooms[i].map[12, rooms[i].map.GetLength(1) / 2] = 1;
+                            rooms[i].map[10, rooms[i].map.GetLength(1) / 2] = 1;
+                            rooms[i].map[11, rooms[i].map.GetLength(1) / 2] = 1;
 
-                    //Middle ladder - always there
-                    inc = 0;
-                    while (rooms[i].map[rooms[i].map.GetLength(0) / 2, 0 + inc] != 1)
-                    {
-                        rooms[i].map[rooms[i].map.GetLength(0) / 2, 0 + inc] = 5;
-                        inc++;
-                    }
-                    inc = 0;
-                    while (rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, 0 + inc] != 1)
-                    {
-                        rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, 0 + inc] = 5;
-                        inc++;
-                    }
+                            //Ladder
+                            inc = 0;
+                            while (rooms[i].map[11, 0 + inc] != 1)
+                            {
+                                rooms[i].map[11, 0 + inc] = 5;
+                                inc++;
+                            }
 
-                    //Choose right or left ladder
-                    platform = true;
-                    if (rng.Next(0, 6) == 0)
-                    {
-                        //Left Ladder
-                        rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 3, rooms[i].map.GetLength(1) / 2] = 5;
-                        inc = 1;
-                        while (rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 3, (rooms[i].map.GetLength(1) / 2) + inc] != 1)
-                        {
-                            rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 3, (rooms[i].map.GetLength(1) / 2) + inc] = 5;
-                            inc++;
-                        }
-                        platform = false;
-                    } else if (rng.Next(0, 6) == 0)
-                    {
-                        //Right ladder
-                        rooms[i].map[(rooms[i].map.GetLength(0) / 2) + 2, rooms[i].map.GetLength(1) / 2] = 5;
-                        inc = 1;
-                        while (rooms[i].map[(rooms[i].map.GetLength(0) / 2) + 2, (rooms[i].map.GetLength(1) / 2) + inc] != 1)
-                        {
-                            rooms[i].map[(rooms[i].map.GetLength(0) / 2) + 2, (rooms[i].map.GetLength(1) / 2) + inc] = 5;
-                            inc++;
-                        }
-                        platform = false;
-                    }
+                            //Choose right or left ladder based on upper exit x pos
+                            platform = true;
+                            if (rng.Next(0, 6) == 0)
+                            {
+                                //Left Ladder
+                                inc = 0;
+                                while (rooms[i].map[9, (rooms[i].map.GetLength(1) / 2) + inc] != 1)
+                                {
+                                    rooms[i].map[9, (rooms[i].map.GetLength(1) / 2) + inc] = 5;
+                                    inc++;
+                                }
+                                platform = false;
+                            }
+                            else if (rng.Next(0, 6) == 0)
+                            {
+                                //Right ladder
+                                inc = 0;
+                                while (rooms[i].map[13, (rooms[i].map.GetLength(1) / 2) + inc] != 1)
+                                {
+                                    rooms[i].map[13, (rooms[i].map.GetLength(1) / 2) + inc] = 5;
+                                    inc++;
+                                }
+                                platform = false;
+                            }
 
-                    //Platform logic
-                    if (platform)
-                    {
-                        if (rng.Next(0, 2) == 0)
-                        {
-                            //Left
-                            rooms[i].map[rooms[i].map.GetLength(0) / 3, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
-                            rooms[i].map[(rooms[i].map.GetLength(0) / 3) - 1, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
-                            rooms[i].map[(rooms[i].map.GetLength(0) / 3) - 2, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
-                        } else
-                        {
-                            //Right
-                            rooms[i].map[(rooms[i].map.GetLength(0) / 3) + (rooms[i].map.GetLength(0) / 3) + 1, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
-                            rooms[i].map[(rooms[i].map.GetLength(0) / 3) + (rooms[i].map.GetLength(0) / 3) + 2, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
-                            rooms[i].map[(rooms[i].map.GetLength(0) / 3) + (rooms[i].map.GetLength(0) / 3) + 3, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
-                        }
+                            //Platform logic
+                            if (platform)
+                            {
+                                if (rng.Next(0, 2) == 0)
+                                {
+                                    //Left
+                                    rooms[i].map[6, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
+                                    rooms[i].map[4, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
+                                    rooms[i].map[5, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
+                                }
+                                else
+                                {
+                                    //Right
+                                    rooms[i].map[18, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
+                                    rooms[i].map[16, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
+                                    rooms[i].map[17, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
+                                }
+                            }
+                            break;
+                        case 1:
+                            //Right side
+                            //Exit
+                            rooms[i].map[19, 0] = 0;
+                            rooms[i].map[20, 0] = 0;
+                            rooms[i].map[21, 0] = 0;
+
+                            //Platform
+                            rooms[i].map[19, rooms[i].map.GetLength(1) / 2] = 1;
+                            rooms[i].map[20, rooms[i].map.GetLength(1) / 2] = 1;
+                            rooms[i].map[21, rooms[i].map.GetLength(1) / 2] = 1;
+
+                            //Ladder
+                            inc = 0;
+                            while (rooms[i].map[20, 0 + inc] != 1)
+                            {
+                                rooms[i].map[20, 0 + inc] = 5;
+                                inc++;
+                            }
+
+                            //Choose right or left ladder based on upper exit x pos
+                            platform = true;
+                            if (rng.Next(0, 6) == 0)
+                            {
+                                //Left Ladder
+                                inc = 0;
+                                while (rooms[i].map[18, (rooms[i].map.GetLength(1) / 2) + inc] != 1)
+                                {
+                                    rooms[i].map[18, (rooms[i].map.GetLength(1) / 2) + inc] = 5;
+                                    inc++;
+                                }
+                                platform = false;
+                            }
+                            else if (rng.Next(0, 6) == 0)
+                            {
+                                //Right ladder
+                                inc = 0;
+                                while (rooms[i].map[22, (rooms[i].map.GetLength(1) / 2) + inc] != 1)
+                                {
+                                    rooms[i].map[22, (rooms[i].map.GetLength(1) / 2) + inc] = 5;
+                                    inc++;
+                                }
+                                platform = false;
+                            }
+
+                            //Platform logic
+                            if (platform)
+                            {
+                                if (rng.Next(0, 2) == 0)
+                                {
+                                    //Left
+                                    rooms[i].map[13, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
+                                    rooms[i].map[14, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
+                                    rooms[i].map[15, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
+                                }
+                                else
+                                {
+                                    //Right
+                                    rooms[i].map[25, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
+                                    rooms[i].map[26, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
+                                    rooms[i].map[27, rooms[i].map.GetLength(1) / 2 + rooms[i].map.GetLength(1) / 4] = 1;
+                                }
+                            }
+                            break;
                     }
                 }
 
@@ -468,10 +528,22 @@ namespace DungeonGeneration
 
                 if (rooms[i].exits[3]) //DOWN EXIT
                 {
-                    //Choose random x position
-                    rooms[i].map[(rooms[i].map.GetLength(0) / 2), rooms[i].map.GetLength(1) - 1] = 0;
-                    rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, rooms[i].map.GetLength(1) - 1] = 0;
-                    rooms[i].map[(rooms[i].map.GetLength(0) / 2) + 1, rooms[i].map.GetLength(1) - 1] = 0;
+                    //Down exit
+                    switch (rooms[i].exitLocation[3])
+                    {
+                        case 0:
+                            //Left
+                            rooms[i].map[10, rooms[i].map.GetLength(1) - 1] = 0;
+                            rooms[i].map[11, rooms[i].map.GetLength(1) - 1] = 0;
+                            rooms[i].map[12, rooms[i].map.GetLength(1) - 1] = 0;
+                            break;
+                        case 1:
+                            //Right
+                            rooms[i].map[19, rooms[i].map.GetLength(1) - 1] = 0;
+                            rooms[i].map[20, rooms[i].map.GetLength(1) - 1] = 0;
+                            rooms[i].map[21, rooms[i].map.GetLength(1) - 1] = 0;
+                            break;
+                    }
                 }
 
                 if (rooms[i] != null)
@@ -483,6 +555,8 @@ namespace DungeonGeneration
 
             //Lock rooms?
             lockRooms(rooms, rng);
+
+            //TODO: add loadingzones......... hmm
         }
 
         public void lockRooms(Room[] rms, Random rng)
@@ -574,7 +648,17 @@ namespace DungeonGeneration
 
                     case 1:
                         //Up exit (Lock Bottom of Adjacent)
-                        b.map[(b.map.GetLength(0) / 2) - 1, b.map.GetLength(1) - 1] = 3;
+                        switch (b.exitLocation[3])
+                        {
+                            case 0:
+                                //Left
+                                b.map[10, b.map.GetLength(1) - 1] = 3;
+                                break;
+                            case 1:
+                                //Right
+                                b.map[19, b.map.GetLength(1) - 1] = 3;
+                                break;
+                        }
                         break;
 
                     case 2:
@@ -598,7 +682,17 @@ namespace DungeonGeneration
 
                     case 3:
                         //Bottom exit (Lock Top of Adjacent)
-                        b.map[(b.map.GetLength(0) / 2) - 1, 0] = 3;
+                        switch (b.exitLocation[1])
+                        {
+                            case 0:
+                                //Left
+                                b.map[10, 0] = 3;
+                                break;
+                            case 1:
+                                //Right
+                                b.map[19, 0] = 3;
+                                break;
+                        }
                         break;
                 }
             }
@@ -698,10 +792,6 @@ namespace DungeonGeneration
 }
 
 //TODO: somehow ensure some rooms will be locked, can't have a dungeon with 0 locked rooms.
-//Possible solution... reject dungeons generated with less than optimal lock amounts. (seems maybe cheaty) (could cause inconsistent generation times)
-
-//TODO: Add platform for main character to spawn on. Or otherwise solve the falling entrance problem
-
-//TODO: Possibly mess with dnd advantage roll on outward rooms being preferred for generation
+//Possible solution... reject dungeons generated with less than optimal lock amounts. (seems maybe cheaty) (could cause inconsistent generation times
 
 //TODO: Generate "Sections" that are locked off? - might require BIG rework of how dungeons work / are generated

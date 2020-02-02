@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,8 @@ namespace DungeonGeneration
         public int mx, my, id;
         public int[,] map = new int[32, 18];
         public bool[] exits = new bool[4];
-        public int[] exitLocation = new int[3];
+        public int[] exitLocation = new int[4];
+        public Rectangle[] loadingZones = new Rectangle[4];
         public Room[] adjacentRooms = new Room[4];
         public Room(int mapx, int mapy)
         {
