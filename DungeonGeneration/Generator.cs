@@ -131,7 +131,7 @@ namespace DungeonGeneration
             //Seed code
             if(useRandomSeed)
             {
-                seed = ((DateTime.Now.Millisecond + 1) * (DateTime.Now.Millisecond + 1)).ToString(); //Better seed
+                seed = ((DateTime.Now.Millisecond + 1) * (DateTime.Now.Second + 1) * (DateTime.Now.Minute + 1)).ToString(); //Better seed
             } else
             {
                 seed = "01234567";
@@ -225,10 +225,31 @@ namespace DungeonGeneration
                         //Check flag for creating room
                         if (canCreateRoomHere)
                         {
+                            //This is where to put the code to randomize exit locations.
                             //create exit in current room
-                            currentRoom.exits[exitIndex] = true;
-                            rooms[createdRooms] = new Room(nx, ny);
-                            currentRoom.adjacentRooms[exitIndex] = rooms[createdRooms];
+                            int el = 0;
+                            switch (exitIndex)
+                            {
+                                case 0:
+                                    //left
+                                    el = rng.Next(0, 3);
+                                    currentRoom.exitLocation[0] = el;
+                                    break;
+                                case 1:
+                                    //Up
+                                    break;
+                                case 2:
+                                    //Right
+                                    el = rng.Next(0, 3);
+                                    currentRoom.exitLocation[2] = el;
+                                    break;
+                                case 3:
+                                    //Down
+                                    break;
+                            }
+                            currentRoom.exits[exitIndex] = true; //Create the exit from the current room
+                            rooms[createdRooms] = new Room(nx, ny); //Create a new room with newx and newy
+                            currentRoom.adjacentRooms[exitIndex] = rooms[createdRooms]; //Make the newly created room a reference in the current rooms adjacents
 
                             //Invert index for newly created room
                             switch (exitIndex)
@@ -250,6 +271,25 @@ namespace DungeonGeneration
                             //Create exit and adj room ids for newly created room
                             rooms[createdRooms].exits[exitIndex] = true;
                             rooms[createdRooms].adjacentRooms[exitIndex] = currentRoom;
+
+                            //Add proper exit location to newly created room
+                            switch (exitIndex)
+                            {
+                                case 0:
+                                    //left
+                                    rooms[createdRooms].exitLocation[0] = el;
+                                    break;
+                                case 1:
+                                    //Up
+                                    break;
+                                case 2:
+                                    //Right
+                                    rooms[createdRooms].exitLocation[2] = el;
+                                    break;
+                                case 3:
+                                    //Down
+                                    break;
+                            }
 
                             notDeadRooms.Add(rooms[createdRooms]);
 
@@ -301,18 +341,33 @@ namespace DungeonGeneration
             for (int i = 0; i < rooms.Length; i++)
             {
                 //Add initial room platform
-                if (i==0 && rooms[i].exits[3])
+                if (i==0 && rooms[i].exits[3]) //If first room and down exit
                 {
                     rooms[i].map[rooms[i].map.GetLength(0) / 2, rooms[i].map.GetLength(1) - 4] = 1;
                     rooms[i].map[(rooms[i].map.GetLength(0) / 2) - 1, rooms[i].map.GetLength(1) - 4] = 1;
                     rooms[i].map[(rooms[i].map.GetLength(0) / 2) + 1, rooms[i].map.GetLength(1) - 4] = 1;
                 }
+
                 //Add (or rather subtract) exits
                 if (rooms[i].exits[0]) //LEFT EXIT
                 {
-                    //TODO: Choose between different y levels
-                    rooms[i].map[0, rooms[i].map.GetLength(1) - 2] = 0;
-                    rooms[i].map[0, rooms[i].map.GetLength(1) - 3] = 0;
+                    switch (rooms[i].exitLocation[0])
+                    {
+                        case 0: //Normal bottom exit
+                            rooms[i].map[0, rooms[i].map.GetLength(1) - 2] = 0;
+                            rooms[i].map[0, rooms[i].map.GetLength(1) - 3] = 0;
+                            break;
+                        case 1:
+                            //Middle exit
+                            rooms[i].map[0, rooms[i].map.GetLength(1) / 2] = 0;
+                            rooms[i].map[0, (rooms[i].map.GetLength(1) / 2) - 1] = 0;
+                            break;
+                        case 2:
+                            //Top exit
+                            rooms[i].map[0, 1] = 0;
+                            rooms[i].map[0, 2] = 0;
+                            break;
+                    }
                 }
 
                 if (rooms[i].exits[1]) //UP EXIT
@@ -392,8 +447,23 @@ namespace DungeonGeneration
                 if (rooms[i].exits[2]) //RIGHT
                 {
                     //Choose random y position
-                    rooms[i].map[rooms[i].map.GetLength(0) - 1, rooms[i].map.GetLength(1) - 2] = 0;
-                    rooms[i].map[rooms[i].map.GetLength(0) - 1, rooms[i].map.GetLength(1) - 3] = 0;
+                    switch (rooms[i].exitLocation[2])
+                    {
+                        case 0: //Normal bottom exit
+                            rooms[i].map[rooms[i].map.GetLength(0) - 1, rooms[i].map.GetLength(1) - 2] = 0;
+                            rooms[i].map[rooms[i].map.GetLength(0) - 1, rooms[i].map.GetLength(1) - 3] = 0;
+                            break;
+                        case 1:
+                            //Middle exit
+                            rooms[i].map[rooms[i].map.GetLength(0) - 1, rooms[i].map.GetLength(1) / 2] = 0;
+                            rooms[i].map[rooms[i].map.GetLength(0) - 1, (rooms[i].map.GetLength(1) / 2) - 1] = 0;
+                            break;
+                        case 2:
+                            //Top exit
+                            rooms[i].map[rooms[i].map.GetLength(0) - 1, 1] = 0;
+                            rooms[i].map[rooms[i].map.GetLength(0) - 1, 2] = 0;
+                            break;
+                    }
                 }
 
                 if (rooms[i].exits[3]) //DOWN EXIT
@@ -445,7 +515,7 @@ namespace DungeonGeneration
             //Add some amount of single exit rooms to locked rooms, the rest are for keys
             foreach (Room r in singleExitRooms)
             {
-                if (rng.Next(0,10) > 4)
+                if (rng.Next(0,10) > -1)
                 {
                     lockedRooms.Add(r);
                 }
@@ -485,7 +555,21 @@ namespace DungeonGeneration
                 {
                     case 0:
                         //Left exit (Lock Right of Adjacent)
-                        b.map[b.map.GetLength(0) - 1, b.map.GetLength(1) - 3] = 2;
+                        switch (b.exitLocation[2])
+                        {
+                            case 0:
+                                //Ground level
+                                b.map[b.map.GetLength(0) - 1, b.map.GetLength(1) - 3] = 2;
+                                break;
+                            case 1:
+                                //middle
+                                b.map[b.map.GetLength(0) - 1, (b.map.GetLength(1) / 2) - 1] = 2;
+                                break;
+                            case 2:
+                                //Top
+                                b.map[b.map.GetLength(0) - 1, 1] = 2;
+                                break;
+                        }
                         break;
 
                     case 1:
@@ -495,7 +579,21 @@ namespace DungeonGeneration
 
                     case 2:
                         //Right exit (Lock Left of Adjacent)
-                        b.map[0, b.map.GetLength(1) - 3] = 2;
+                        switch (b.exitLocation[0])
+                        {
+                            case 0:
+                                //Ground level
+                                b.map[0, b.map.GetLength(1) - 3] = 2;
+                                break;
+                            case 1:
+                                //Middle
+                                b.map[0, (b.map.GetLength(1) / 2) - 1] = 2;
+                                break;
+                            case 2:
+                                //Top
+                                b.map[0, 1] = 2;
+                                break;
+                        }
                         break;
 
                     case 3:
