@@ -27,6 +27,7 @@ namespace DungeonGeneration
         List<Door> doors = new List<Door>();
         List<Chest> chests = new List<Chest>();
         List<Ladder> ladders = new List<Ladder>();
+        List<Rectangle> loadingZones = new List<Rectangle>();
 
         //Game objects
         Player player = new Player();
@@ -34,7 +35,7 @@ namespace DungeonGeneration
 
         //Textures
         Texture2D sWall, sPlayer, sLockDoor, sLockDoorV, sKey, sChestClosed, sChestOpen, sLadder;
-        Texture2D hbtex, hbtexWall;
+        Texture2D hbtex, hbtexWall, hbtexLoadingZone;
 
         public Game1()
         {
@@ -83,6 +84,11 @@ namespace DungeonGeneration
             Color[] c1 = new Color[1];
             c1[0] = Color.FromNonPremultiplied(0, 0, 255, transparency_amount);
             hbtexWall.SetData<Color>(c1);
+
+            hbtexLoadingZone = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
+            Color[] c2 = new Color[1];
+            c2[0] = Color.FromNonPremultiplied(0, 255, 0, transparency_amount);
+            hbtexLoadingZone.SetData<Color>(c2);
         }
 
         protected override void UnloadContent()
@@ -147,6 +153,39 @@ namespace DungeonGeneration
                 }
             }
 
+            //Change rooms with loading zones
+
+            if (player.currentRoom != null)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    if (player.currentRoom.loadingZones[i] != null)
+                    {
+                        if (player.boundingBox.Intersects(player.currentRoom.loadingZones[i]))
+                        {
+                            switch (i)
+                            {
+                                case 0:
+                                    //Move to left room
+                                    player.currentRoom = player.currentRoom.adjacentRooms[0];
+                                    player.x = player.currentRoom.loadingZones[2].X - 8;
+                                    player.y = player.currentRoom.loadingZones[2].Y;
+                                    break;
+                                case 1:
+                                    //Move to up room
+                                    break;
+                                case 2:
+                                    //Move to right room
+                                    break;
+                                case 3:
+                                    //Move to down room
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+
             //After switching rooms, load the objects in the currentRoom's map
             if (player.pr != player.currentRoom)
             {
@@ -155,6 +194,16 @@ namespace DungeonGeneration
                 doors.Clear();
                 chests.Clear();
                 ladders.Clear();
+                loadingZones.Clear();
+
+                //Load loading zones
+                for (int i = 0; i < 4; i++)
+                {
+                    if (player.currentRoom.loadingZones[i] != null)
+                    {
+                        loadingZones.Add(player.currentRoom.loadingZones[i]);
+                    }
+                }
 
                 //Load room objects
                 for (int i = 0; i < player.currentRoom.map.GetLength(0); i++)
@@ -213,12 +262,12 @@ namespace DungeonGeneration
             {
                 player.xacc = 0;
             }
-            if (ks.IsKeyDown(Keys.W) & !prevks.IsKeyDown(Keys.W))
+            if (ks.IsKeyDown(Keys.W) && !prevks.IsKeyDown(Keys.W) && player.grounded)
             {
-                player.yvel = -7;
+                player.yvel = -4;
             }
 
-            if (ks.IsKeyDown(Keys.F) & !prevks.IsKeyDown(Keys.F))
+            if (ks.IsKeyDown(Keys.F) && !prevks.IsKeyDown(Keys.F))
             {
                 graphics.ToggleFullScreen();
             }
@@ -271,6 +320,12 @@ namespace DungeonGeneration
                 foreach (Door d in doors)
                 {
                     spriteBatch.Draw(d.texture, new Vector2(d.X, d.Y));
+                }
+
+                //Draw loading zones
+                foreach (Rectangle z  in loadingZones)
+                {
+                    spriteBatch.Draw(hbtexLoadingZone, z, Color.White);
                 }
             }
 

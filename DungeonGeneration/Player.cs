@@ -13,11 +13,12 @@ namespace DungeonGeneration
         public Room currentRoom, pr;
         public Room[] currentDungeon;
         public Texture2D texture;
-        public int x = 0, y = 0, xvel = 0, yvel = 0, xacc = 0, yacc = 0;
+        public int x = 0, y = 0, xvel = 0, yvel = 0, xacc = 0, yacc = 0, prevxacc = 0;
         public Vector2 velocity = new Vector2(0);
         public Rectangle boundingBox = new Rectangle();
         public Rectangle previousBoundingBox = new Rectangle();
         public bool grounded = false;
+        public bool previouslyGrounded = false;
 
         public Player()
         {

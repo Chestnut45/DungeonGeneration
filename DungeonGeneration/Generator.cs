@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Microsoft.Xna.Framework;
 
 namespace DungeonGeneration
 {
@@ -233,22 +234,22 @@ namespace DungeonGeneration
                             {
                                 case 0:
                                     //left
-                                    el = rng.Next(0, 3);
+                                    el = rng.Next(1, 4);
                                     currentRoom.exitLocation[0] = el;
                                     break;
                                 case 1:
                                     //Up
-                                    vel = rng.Next(0, 2);
+                                    vel = rng.Next(1, 3);
                                     currentRoom.exitLocation[1] = vel;
                                     break;
                                 case 2:
                                     //Right
-                                    el = rng.Next(0, 3);
+                                    el = rng.Next(1, 4);
                                     currentRoom.exitLocation[2] = el;
                                     break;
                                 case 3:
                                     //Down
-                                    vel = rng.Next(0, 2);
+                                    vel = rng.Next(1, 3);
                                     currentRoom.exitLocation[3] = vel;
                                     break;
                             }
@@ -352,16 +353,16 @@ namespace DungeonGeneration
                 {
                     switch (rooms[i].exitLocation[0])
                     {
-                        case 0: //Normal bottom exit
+                        case 1: //Normal bottom exit
                             rooms[i].map[0, rooms[i].map.GetLength(1) - 2] = 0;
                             rooms[i].map[0, rooms[i].map.GetLength(1) - 3] = 0;
                             break;
-                        case 1:
+                        case 2:
                             //Middle exit
                             rooms[i].map[0, rooms[i].map.GetLength(1) / 2] = 0;
                             rooms[i].map[0, (rooms[i].map.GetLength(1) / 2) - 1] = 0;
                             break;
-                        case 2:
+                        case 3:
                             //Top exit
                             rooms[i].map[0, 1] = 0;
                             rooms[i].map[0, 2] = 0;
@@ -373,7 +374,7 @@ namespace DungeonGeneration
                 {
                     switch (rooms[i].exitLocation[1])
                     {
-                        case 0:
+                        case 1:
                             //Left side
                             //Exit
                             rooms[i].map[12, 0] = 0;
@@ -437,7 +438,7 @@ namespace DungeonGeneration
                                 }
                             }
                             break;
-                        case 1:
+                        case 2:
                             //Right side
                             //Exit
                             rooms[i].map[19, 0] = 0;
@@ -509,16 +510,16 @@ namespace DungeonGeneration
                     //Choose random y position
                     switch (rooms[i].exitLocation[2])
                     {
-                        case 0: //Normal bottom exit
+                        case 1: //Normal bottom exit
                             rooms[i].map[rooms[i].map.GetLength(0) - 1, rooms[i].map.GetLength(1) - 2] = 0;
                             rooms[i].map[rooms[i].map.GetLength(0) - 1, rooms[i].map.GetLength(1) - 3] = 0;
                             break;
-                        case 1:
+                        case 2:
                             //Middle exit
                             rooms[i].map[rooms[i].map.GetLength(0) - 1, rooms[i].map.GetLength(1) / 2] = 0;
                             rooms[i].map[rooms[i].map.GetLength(0) - 1, (rooms[i].map.GetLength(1) / 2) - 1] = 0;
                             break;
-                        case 2:
+                        case 3:
                             //Top exit
                             rooms[i].map[rooms[i].map.GetLength(0) - 1, 1] = 0;
                             rooms[i].map[rooms[i].map.GetLength(0) - 1, 2] = 0;
@@ -531,13 +532,13 @@ namespace DungeonGeneration
                     //Down exit
                     switch (rooms[i].exitLocation[3])
                     {
-                        case 0:
+                        case 1:
                             //Left
                             rooms[i].map[10, rooms[i].map.GetLength(1) - 1] = 0;
                             rooms[i].map[11, rooms[i].map.GetLength(1) - 1] = 0;
                             rooms[i].map[12, rooms[i].map.GetLength(1) - 1] = 0;
                             break;
-                        case 1:
+                        case 2:
                             //Right
                             rooms[i].map[19, rooms[i].map.GetLength(1) - 1] = 0;
                             rooms[i].map[20, rooms[i].map.GetLength(1) - 1] = 0;
@@ -557,6 +558,82 @@ namespace DungeonGeneration
             lockRooms(rooms, rng);
 
             //TODO: add loadingzones......... hmm
+            for (int i = 0; i < rooms.Length; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    if (rooms[i].exitLocation[j] != 0)
+                    {
+                        switch (j)
+                        {
+                            case 0:
+                                //Left exit
+                                switch (rooms[i].exitLocation[j])
+                                {
+                                    case 1:
+                                        //Bottom level left exit
+                                        rooms[i].loadingZones[j] = new Rectangle(0, (rooms[i].map.GetLength(1) - 3) * 8, 8, 16);
+                                        break;
+                                    case 2:
+                                        //Middle level left exit
+                                        rooms[i].loadingZones[j] = new Rectangle(0, ((rooms[i].map.GetLength(1) / 2) - 1) * 8, 8, 16);
+                                        break;
+                                    case 3:
+                                        //Top level left exit
+                                        rooms[i].loadingZones[j] = new Rectangle(0, 8, 8, 16);
+                                        break;
+                                }
+                                break;
+                            case 1:
+                                //Up exit
+                                switch (rooms[i].exitLocation[j])
+                                {
+                                    case 1:
+                                        //Left up exit
+                                        rooms[i].loadingZones[j] = new Rectangle(10 * 8, 0, 24, 8);
+                                        break;
+                                    case 2:
+                                        //Right up exit
+                                        rooms[i].loadingZones[j] = new Rectangle(19 * 8, 0, 24, 8);
+                                        break;
+                                }
+                                break;
+                            case 2:
+                                //Right exit
+                                switch (rooms[i].exitLocation[j])
+                                {
+                                    case 1:
+                                        //Bottom level right exit
+                                        rooms[i].loadingZones[j] = new Rectangle((rooms[i].map.GetLength(0) - 1) * 8, (rooms[i].map.GetLength(1) - 3) * 8, 8, 16);
+                                        break;
+                                    case 2:
+                                        //Middle level right exit
+                                        rooms[i].loadingZones[j] = new Rectangle((rooms[i].map.GetLength(0) - 1) * 8, ((rooms[i].map.GetLength(1) / 2) - 1) * 8, 8, 16);
+                                        break;
+                                    case 3:
+                                        //Top level right exit
+                                        rooms[i].loadingZones[j] = new Rectangle((rooms[i].map.GetLength(0) - 1) * 8, 8, 8, 16);
+                                        break;
+                                }
+                                break;
+                            case 3:
+                                //Down exit
+                                switch (rooms[i].exitLocation[j])
+                                {
+                                    case 1:
+                                        //Left down exit
+                                        rooms[i].loadingZones[j] = new Rectangle(10 * 8, (rooms[i].map.GetLength(1) - 1) * 8, 24, 8);
+                                        break;
+                                    case 2:
+                                        //Right down exit
+                                        rooms[i].loadingZones[j] = new Rectangle(19 * 8, (rooms[i].map.GetLength(1) - 1) * 8, 24, 8);
+                                        break;
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
         }
 
         public void lockRooms(Room[] rms, Random rng)
@@ -631,15 +708,15 @@ namespace DungeonGeneration
                         //Left exit (Lock Right of Adjacent)
                         switch (b.exitLocation[2])
                         {
-                            case 0:
+                            case 1:
                                 //Ground level
                                 b.map[b.map.GetLength(0) - 1, b.map.GetLength(1) - 3] = 2;
                                 break;
-                            case 1:
+                            case 2:
                                 //middle
                                 b.map[b.map.GetLength(0) - 1, (b.map.GetLength(1) / 2) - 1] = 2;
                                 break;
-                            case 2:
+                            case 3:
                                 //Top
                                 b.map[b.map.GetLength(0) - 1, 1] = 2;
                                 break;
@@ -650,11 +727,11 @@ namespace DungeonGeneration
                         //Up exit (Lock Bottom of Adjacent)
                         switch (b.exitLocation[3])
                         {
-                            case 0:
+                            case 1:
                                 //Left
                                 b.map[10, b.map.GetLength(1) - 1] = 3;
                                 break;
-                            case 1:
+                            case 2:
                                 //Right
                                 b.map[19, b.map.GetLength(1) - 1] = 3;
                                 break;
@@ -665,15 +742,15 @@ namespace DungeonGeneration
                         //Right exit (Lock Left of Adjacent)
                         switch (b.exitLocation[0])
                         {
-                            case 0:
+                            case 1:
                                 //Ground level
                                 b.map[0, b.map.GetLength(1) - 3] = 2;
                                 break;
-                            case 1:
+                            case 2:
                                 //Middle
                                 b.map[0, (b.map.GetLength(1) / 2) - 1] = 2;
                                 break;
-                            case 2:
+                            case 3:
                                 //Top
                                 b.map[0, 1] = 2;
                                 break;
@@ -684,11 +761,11 @@ namespace DungeonGeneration
                         //Bottom exit (Lock Top of Adjacent)
                         switch (b.exitLocation[1])
                         {
-                            case 0:
+                            case 1:
                                 //Left
                                 b.map[10, 0] = 3;
                                 break;
-                            case 1:
+                            case 2:
                                 //Right
                                 b.map[19, 0] = 3;
                                 break;

@@ -10,8 +10,10 @@ namespace DungeonGeneration
     public class Physics
     {
         int gravCoefficient = 1;
-        int maxYvel = 3;
+        int maxYvel = 4;
         int maxXvel = 2;
+        public int c = 0;
+        public int xc = 0;
         bool done = false;
         CollisionSide side;
         Rectangle fr;
@@ -30,11 +32,23 @@ namespace DungeonGeneration
                 }
             }
 
+            c++;
+            if (!p.grounded && p.previouslyGrounded)
+            {
+                c = 1;
+            }
+
             //Calculate vertical and horizontal velocities
-            if (p.yvel != maxYvel && p.grounded == false)
+            if (p.yvel != maxYvel && p.grounded == false && c % 4 == 0)
             {
                 p.yvel += gravCoefficient;
             }
+
+            if (p.prevxacc != p.xacc)
+            {
+                xc = 0;
+            }
+            xc++;
 
             if (p.xacc == 0)
             {
@@ -43,15 +57,46 @@ namespace DungeonGeneration
                     
                     if (p.xvel < 0)
                     {
-                        p.xvel += 1;
+                        if (p.grounded)
+                        {
+                            if (xc % 4 == 0)
+                                p.xvel += 1;
+                        } else
+                        {
+                            if (xc % 8 == 0)
+                                p.xvel += 1;
+                        }
                     } else
                     {
-                        p.xvel -= 1;
+                        if (p.grounded)
+                        {
+                            if (xc % 4 == 0)
+                                p.xvel -= 1;
+                        }
+                        else
+                        {
+                            if (xc % 8 == 0)
+                                p.xvel -= 1;
+                        }
                     }
                     
                 }
             }
-            p.xvel += p.xacc;
+
+            if (p.grounded)
+            {
+                if (xc % 4 == 0)
+                {
+                    p.xvel += p.xacc;
+                }
+            } else
+            {
+                if (xc % 8 == 0)
+                {
+                    p.xvel += p.xacc;
+                }
+            }
+
             p.xvel = MathHelper.Clamp(p.xvel, -maxXvel, maxXvel);
 
             //Check for FUTURE collision
@@ -144,6 +189,8 @@ namespace DungeonGeneration
 
             //After player physics has been handled, set the previousBoundingBox Rectangle
             p.previousBoundingBox = p.boundingBox;
+            p.previouslyGrounded = p.grounded;
+            p.prevxacc = p.xacc;
         }
     }
 }
