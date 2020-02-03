@@ -187,6 +187,51 @@ namespace DungeonGeneration
             //Update hitbox
             p.Update();
 
+            //Loading zone collision
+            if (p.currentRoom != null)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    if (p.currentRoom.loadingZones[i] != null)
+                    {
+                        if (p.boundingBox.Intersects(p.currentRoom.loadingZones[i]) && p.currentRoom.adjacentRooms[i] != null)
+                        {
+                            switch (i)
+                            {
+                                case 0:
+                                    //Move to left room
+                                    p.currentRoom = p.currentRoom.adjacentRooms[0];
+                                    p.x = p.currentRoom.loadingZones[2].X - 8;
+                                    p.y = p.currentRoom.loadingZones[2].Y;
+                                    p.Update();
+                                    break;
+                                case 1:
+                                    //Move to up room
+                                    p.currentRoom = p.currentRoom.adjacentRooms[1];
+                                    p.x = p.currentRoom.loadingZones[3].X + 8;
+                                    p.y = p.currentRoom.loadingZones[3].Y - 8;
+                                    p.Update();
+                                    break;
+                                case 2:
+                                    //Move to right room
+                                    p.currentRoom = p.currentRoom.adjacentRooms[2];
+                                    p.x = p.currentRoom.loadingZones[0].X + 8;
+                                    p.y = p.currentRoom.loadingZones[0].Y;
+                                    p.Update();
+                                    break;
+                                case 3:
+                                    //Move to down room
+                                    p.currentRoom = p.currentRoom.adjacentRooms[3];
+                                    p.x = p.currentRoom.loadingZones[1].X + 8;
+                                    p.y = p.currentRoom.loadingZones[1].Y + 8;
+                                    p.Update();
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+
             //After player physics has been handled, set the previousBoundingBox Rectangle
             p.previousBoundingBox = p.boundingBox;
             p.previouslyGrounded = p.grounded;

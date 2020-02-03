@@ -153,39 +153,6 @@ namespace DungeonGeneration
                 }
             }
 
-            //Change rooms with loading zones
-
-            if (player.currentRoom != null)
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    if (player.currentRoom.loadingZones[i] != null)
-                    {
-                        if (player.boundingBox.Intersects(player.currentRoom.loadingZones[i]))
-                        {
-                            switch (i)
-                            {
-                                case 0:
-                                    //Move to left room
-                                    player.currentRoom = player.currentRoom.adjacentRooms[0];
-                                    player.x = player.currentRoom.loadingZones[2].X - 8;
-                                    player.y = player.currentRoom.loadingZones[2].Y;
-                                    break;
-                                case 1:
-                                    //Move to up room
-                                    break;
-                                case 2:
-                                    //Move to right room
-                                    break;
-                                case 3:
-                                    //Move to down room
-                                    break;
-                            }
-                        }
-                    }
-                }
-            }
-
             //After switching rooms, load the objects in the currentRoom's map
             if (player.pr != player.currentRoom)
             {
