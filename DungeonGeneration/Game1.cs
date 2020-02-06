@@ -202,7 +202,7 @@ namespace DungeonGeneration
                                 //Create key chests
                                 chests.Add(new Chest(i * tilesize, j * tilesize));
                                 chests[chests.Count - 1].texture = sChestClosed;
-                                chests[chests.Count - 1].contents = new Drop(0, 0, Drop.dropType.key); //Create a new drop of type key and make the chest "contain" it.
+                                chests[chests.Count - 1].contents = new Drop(0, 0, Drop.dropType.key); //This code is untested
                                 //Drop dormancy TODO?
                                 break;
                             case 5:
@@ -234,8 +234,12 @@ namespace DungeonGeneration
                 player.yvel = -4;
             }
 
+            //Debug fullscreen
             if (ks.IsKeyDown(Keys.F) && !prevks.IsKeyDown(Keys.F))
             {
+                graphics.PreferredBackBufferWidth = 1920;
+                graphics.PreferredBackBufferHeight = 1080;
+                cam.scale = 7.5f;
                 graphics.ToggleFullScreen();
             }
 

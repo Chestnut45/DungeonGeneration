@@ -44,11 +44,11 @@ namespace DungeonGeneration
                 p.yvel += gravCoefficient;
             }
 
+            xc++;
             if (p.prevxacc != p.xacc)
             {
                 xc = 0;
             }
-            xc++;
 
             if (p.xacc == 0)
             {
@@ -203,6 +203,8 @@ namespace DungeonGeneration
                                     p.currentRoom = p.currentRoom.adjacentRooms[0];
                                     p.x = p.currentRoom.loadingZones[2].X - 8;
                                     p.y = p.currentRoom.loadingZones[2].Y;
+                                    p.xvel = 0;
+                                    p.yvel = 0;
                                     p.Update();
                                     break;
                                 case 1:
@@ -210,6 +212,8 @@ namespace DungeonGeneration
                                     p.currentRoom = p.currentRoom.adjacentRooms[1];
                                     p.x = p.currentRoom.loadingZones[3].X + 8;
                                     p.y = p.currentRoom.loadingZones[3].Y - 8;
+                                    p.xvel = 0;
+                                    p.yvel = 0;
                                     p.Update();
                                     break;
                                 case 2:
@@ -217,6 +221,8 @@ namespace DungeonGeneration
                                     p.currentRoom = p.currentRoom.adjacentRooms[2];
                                     p.x = p.currentRoom.loadingZones[0].X + 8;
                                     p.y = p.currentRoom.loadingZones[0].Y;
+                                    p.xvel = 0;
+                                    p.yvel = 0;
                                     p.Update();
                                     break;
                                 case 3:
@@ -224,6 +230,8 @@ namespace DungeonGeneration
                                     p.currentRoom = p.currentRoom.adjacentRooms[3];
                                     p.x = p.currentRoom.loadingZones[1].X + 8;
                                     p.y = p.currentRoom.loadingZones[1].Y + 8;
+                                    p.xvel = 0;
+                                    p.yvel = 0;
                                     p.Update();
                                     break;
                             }

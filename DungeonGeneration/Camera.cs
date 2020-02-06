@@ -11,7 +11,7 @@ namespace DungeonGeneration
     public class Camera
     {
         Matrix viewMatrix;
-        float scale = 5.0f;
+        public float scale = 5.0f;
         Vector2 position = Vector2.Zero;
 
         public Matrix ViewMatrix
