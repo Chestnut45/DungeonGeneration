@@ -37,6 +37,8 @@ namespace DungeonGeneration
         Texture2D sWall, sPlayer, sLockDoor, sLockDoorV, sKey, sChestClosed, sChestOpen, sLadder;
         Texture2D hbtex, hbtexWall, hbtexLoadingZone;
 
+        //TODO: Set up game states, begin in main menu state, set up functioning main menu and loading functions.
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
