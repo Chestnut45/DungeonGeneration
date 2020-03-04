@@ -37,6 +37,16 @@ namespace DungeonGeneration
         Texture2D sWall, sPlayer, sLockDoor, sLockDoorV, sKey, sChestClosed, sChestOpen, sLadder;
         Texture2D hbtex, hbtexWall, hbtexLoadingZone;
 
+        //State system
+        enum GameState
+        {
+            MainMenu,
+            Gameplay,
+            Pause
+        }
+
+        GameState state = GameState.MainMenu;
+
         //TODO: Set up game states, begin in main menu state, set up functioning main menu and loading functions.
 
         public Game1()
@@ -110,130 +120,147 @@ namespace DungeonGeneration
                 player.texture = sPlayer;
             }
 
-            // TODO: Add your update logic here
             ks = Keyboard.GetState();
-            if (ks.IsKeyDown(Keys.P) & !prevks.IsKeyDown(Keys.P))
+
+            // Main game loop
+            switch (state)
             {
-                player.currentDungeon = generator.generateDungeon(25, true);
-                player.currentRoom = player.currentDungeon[0]; //currentDungeon is just a 1d array of rooms that all belong to the current dungeon
-                player.x = (player.currentRoom.map.GetLength(0) / 2) * tilesize;
-                player.y = ((player.currentRoom.map.GetLength(1) / 2) + 1) * tilesize;
-
-                //TODO: Build dungeon room objects. Load all in memory or one room / dungeon at a time?
-            }
-
-            //Change rooms
-            if (ks.IsKeyDown(Keys.Left) & !prevks.IsKeyDown(Keys.Left))
-            {
-                if (player.currentRoom.adjacentRooms[0] != null)
-                {
-                    player.currentRoom = player.currentRoom.adjacentRooms[0];
-                }
-            }
-
-            if (ks.IsKeyDown(Keys.Up) & !prevks.IsKeyDown(Keys.Up))
-            {
-                if (player.currentRoom.adjacentRooms[1] != null)
-                {
-                    player.currentRoom = player.currentRoom.adjacentRooms[1];
-                }
-            }
-
-            if (ks.IsKeyDown(Keys.Right) & !prevks.IsKeyDown(Keys.Right))
-            {
-                if (player.currentRoom.adjacentRooms[2] != null)
-                {
-                    player.currentRoom = player.currentRoom.adjacentRooms[2];
-                }
-            }
-
-            if (ks.IsKeyDown(Keys.Down) & !prevks.IsKeyDown(Keys.Down))
-            {
-                if (player.currentRoom.adjacentRooms[3] != null)
-                {
-                    player.currentRoom = player.currentRoom.adjacentRooms[3];
-                }
-            }
-
-            //After switching rooms, load the objects in the currentRoom's map
-            if (player.pr != player.currentRoom)
-            {
-                //Clear lists for objects to be added to
-                walls.Clear();
-                doors.Clear();
-                chests.Clear();
-                ladders.Clear();
-                loadingZones.Clear();
-
-                //Load loading zones
-                for (int i = 0; i < 4; i++)
-                {
-                    if (player.currentRoom.loadingZones[i] != null)
+                case GameState.MainMenu:
+                    //Main menu code
+                    if (ks.IsKeyDown(Keys.P) & !prevks.IsKeyDown(Keys.P))
                     {
-                        loadingZones.Add(player.currentRoom.loadingZones[i]);
+                        player.currentDungeon = generator.generateDungeon(25, true);
+                        player.currentRoom = player.currentDungeon[0]; //currentDungeon is just a 1d array of rooms that all belong to the current dungeon
+                        player.x = (player.currentRoom.map.GetLength(0) / 2) * tilesize;
+                        player.y = ((player.currentRoom.map.GetLength(1) / 2) + 1) * tilesize;
+
+                        state = GameState.Gameplay;
+
+                        //TODO: Build dungeon room objects. Load all in memory or one room / dungeon at a time?
                     }
-                }
+                    break;
 
-                //Load room objects
-                for (int i = 0; i < player.currentRoom.map.GetLength(0); i++)
-                {
-                    for (int j = 0; j < player.currentRoom.map.GetLength(1); j++)
+                case GameState.Gameplay:
+                    //Gameplay code
+                    //Change rooms
+                    if (ks.IsKeyDown(Keys.Left) & !prevks.IsKeyDown(Keys.Left))
                     {
-                        switch (player.currentRoom.map[i,j])
+                        if (player.currentRoom.adjacentRooms[0] != null)
                         {
-                            case 1:
-                                //Create wall objects with proper values
-                                walls.Add(new Wall(i * tilesize, j * tilesize, sWall));
-                                //walls[walls.Count - 1].texture = sWall;
-                                break;
-
-                            case 2:
-                                //Create normal locked doors
-                                doors.Add(new Door(i * tilesize, j * tilesize));
-                                doors[doors.Count - 1].texture = sLockDoor;
-                                break;
-
-                            case 3:
-                                //Create vertical locked doors
-                                doors.Add(new Door(i * tilesize, j * tilesize));
-                                doors[doors.Count - 1].vertical = true;
-                                doors[doors.Count - 1].texture = sLockDoorV;
-                                break;
-
-                            case 4:
-                                //Create key chests
-                                chests.Add(new Chest(i * tilesize, j * tilesize));
-                                chests[chests.Count - 1].texture = sChestClosed;
-                                chests[chests.Count - 1].contents = new Drop(0, 0, Drop.dropType.key); //This code is untested
-                                //Drop dormancy TODO?
-                                break;
-                            case 5:
-                                //Create normal locked doors
-                                ladders.Add(new Ladder(i * tilesize, j * tilesize));
-                                ladders[ladders.Count - 1].texture = sLadder;
-                                break;
+                            player.currentRoom = player.currentRoom.adjacentRooms[0];
                         }
                     }
-                }
-            }
-            player.pr = player.currentRoom; //After the variable is needed, set the previous room to the current room
 
-            //Deal with physics
-            if (ks.IsKeyDown(Keys.A))
-            {
-                player.xacc = -1;
-            }
-            if (ks.IsKeyDown(Keys.D))
-            {
-                player.xacc = 1;
-            }
-            if (!ks.IsKeyDown(Keys.D) && !ks.IsKeyDown(Keys.A))
-            {
-                player.xacc = 0;
-            }
-            if (ks.IsKeyDown(Keys.W) && !prevks.IsKeyDown(Keys.W) && player.grounded)
-            {
-                player.yvel = -4;
+                    if (ks.IsKeyDown(Keys.Up) & !prevks.IsKeyDown(Keys.Up))
+                    {
+                        if (player.currentRoom.adjacentRooms[1] != null)
+                        {
+                            player.currentRoom = player.currentRoom.adjacentRooms[1];
+                        }
+                    }
+
+                    if (ks.IsKeyDown(Keys.Right) & !prevks.IsKeyDown(Keys.Right))
+                    {
+                        if (player.currentRoom.adjacentRooms[2] != null)
+                        {
+                            player.currentRoom = player.currentRoom.adjacentRooms[2];
+                        }
+                    }
+
+                    if (ks.IsKeyDown(Keys.Down) & !prevks.IsKeyDown(Keys.Down))
+                    {
+                        if (player.currentRoom.adjacentRooms[3] != null)
+                        {
+                            player.currentRoom = player.currentRoom.adjacentRooms[3];
+                        }
+                    }
+
+                    //After switching rooms, load the objects in the currentRoom's map
+                    if (player.pr != player.currentRoom)
+                    {
+                        //Clear lists for objects to be added to
+                        walls.Clear();
+                        doors.Clear();
+                        chests.Clear();
+                        ladders.Clear();
+                        loadingZones.Clear();
+
+                        //Load loading zones
+                        for (int i = 0; i < 4; i++)
+                        {
+                            if (player.currentRoom.loadingZones[i] != null)
+                            {
+                                loadingZones.Add(player.currentRoom.loadingZones[i]);
+                            }
+                        }
+
+                        //Load room objects
+                        for (int i = 0; i < player.currentRoom.map.GetLength(0); i++)
+                        {
+                            for (int j = 0; j < player.currentRoom.map.GetLength(1); j++)
+                            {
+                                switch (player.currentRoom.map[i, j])
+                                {
+                                    case 1:
+                                        //Create wall objects with proper values
+                                        walls.Add(new Wall(i * tilesize, j * tilesize, sWall));
+                                        //walls[walls.Count - 1].texture = sWall;
+                                        break;
+
+                                    case 2:
+                                        //Create normal locked doors
+                                        doors.Add(new Door(i * tilesize, j * tilesize));
+                                        doors[doors.Count - 1].texture = sLockDoor;
+                                        break;
+
+                                    case 3:
+                                        //Create vertical locked doors
+                                        doors.Add(new Door(i * tilesize, j * tilesize));
+                                        doors[doors.Count - 1].vertical = true;
+                                        doors[doors.Count - 1].texture = sLockDoorV;
+                                        break;
+
+                                    case 4:
+                                        //Create key chests
+                                        chests.Add(new Chest(i * tilesize, j * tilesize));
+                                        chests[chests.Count - 1].texture = sChestClosed;
+                                        chests[chests.Count - 1].contents = new Drop(0, 0, Drop.dropType.key); //This code is untested
+                                                                                                               //Drop dormancy TODO?
+                                        break;
+                                    case 5:
+                                        //Create normal locked doors
+                                        ladders.Add(new Ladder(i * tilesize, j * tilesize));
+                                        ladders[ladders.Count - 1].texture = sLadder;
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    player.pr = player.currentRoom; //After the variable is needed, set the previous room to the current room
+
+                    //Deal with physics
+                    if (ks.IsKeyDown(Keys.A))
+                    {
+                        player.xacc = -1;
+                    }
+                    if (ks.IsKeyDown(Keys.D))
+                    {
+                        player.xacc = 1;
+                    }
+                    if (!ks.IsKeyDown(Keys.D) && !ks.IsKeyDown(Keys.A))
+                    {
+                        player.xacc = 0;
+                    }
+                    if (ks.IsKeyDown(Keys.W) && !prevks.IsKeyDown(Keys.W) && player.grounded)
+                    {
+                        player.yvel = -4;
+                    }
+                    break;
+
+                case GameState.Pause:
+                    //Pause code
+
+                    break;
             }
 
             //Debug fullscreen
@@ -245,7 +272,7 @@ namespace DungeonGeneration
                 graphics.ToggleFullScreen();
             }
 
-            //Update other instances
+            //Update camera
             cam.Update(player, graphics);
 
             if (player.currentDungeon != null)

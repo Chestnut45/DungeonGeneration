@@ -557,7 +557,6 @@ namespace DungeonGeneration
             //Lock rooms?
             lockRooms(rooms, rng);
 
-            //TODO: add loadingzones......... hmm
             for (int i = 0; i < rooms.Length; i++)
             {
                 for (int j = 0; j < 4; j++)
