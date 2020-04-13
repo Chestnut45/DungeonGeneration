@@ -126,9 +126,10 @@ namespace DungeonGeneration
             switch (state)
             {
                 case GameState.MainMenu:
-                    //Main menu code
+                    //Main menu code TODO: make the fucking menu dipshit
                     if (ks.IsKeyDown(Keys.P) & !prevks.IsKeyDown(Keys.P))
                     {
+                        //change this to trigger on startGame();
                         player.currentDungeon = generator.generateDungeon(25, true);
                         player.currentRoom = player.currentDungeon[0]; //currentDungeon is just a 1d array of rooms that all belong to the current dungeon
                         player.x = (player.currentRoom.map.GetLength(0) / 2) * tilesize;
@@ -143,6 +144,17 @@ namespace DungeonGeneration
                 case GameState.Gameplay:
                     //Gameplay code
                     //Change rooms
+                    if (ks.IsKeyDown(Keys.P) & !prevks.IsKeyDown(Keys.P))
+                    {
+                        player.currentDungeon = generator.generateDungeon(25, true);
+                        player.currentRoom = player.currentDungeon[0]; //currentDungeon is just a 1d array of rooms that all belong to the current dungeon
+                        player.x = (player.currentRoom.map.GetLength(0) / 2) * tilesize;
+                        player.y = ((player.currentRoom.map.GetLength(1) / 2) + 1) * tilesize;
+
+                        state = GameState.Gameplay;
+
+                        //TODO: Build dungeon room objects. Load all in memory or one room / dungeon at a time?
+                    }
                     if (ks.IsKeyDown(Keys.Left) & !prevks.IsKeyDown(Keys.Left))
                     {
                         if (player.currentRoom.adjacentRooms[0] != null)
@@ -236,6 +248,7 @@ namespace DungeonGeneration
                             }
                         }
                     }
+
                     player.pr = player.currentRoom; //After the variable is needed, set the previous room to the current room
 
                     //Deal with physics
@@ -290,43 +303,54 @@ namespace DungeonGeneration
         {
             GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
+            // TODO: draw based on gamestates
             spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null, null, cam.ViewMatrix);
 
-            //Go through current room and draw tiles
-            if (player.currentRoom != null)
+            switch (state)
             {
-                foreach (Wall w in walls)
-                {
-                    spriteBatch.Draw(w.texture, new Vector2(w.X, w.Y));
+                case GameState.MainMenu:
+                    //Menu drawing
 
-                    //Draw hitboxes (debug)
-                    spriteBatch.Draw(hbtexWall, w.boundingBox, Color.White);
-                }
+                    break;
+                case GameState.Gameplay:
+                    //Gameplay drawing
 
-                foreach (Chest c in chests)
-                {
-                    spriteBatch.Draw(c.texture, new Vector2(c.X, c.Y));
-                }
+                    //Go through current room and draw tiles
+                    if (player.currentRoom != null)
+                    {
+                        foreach (Wall w in walls)
+                        {
+                            spriteBatch.Draw(w.texture, new Vector2(w.X, w.Y));
 
-                foreach (Ladder l in ladders)
-                {
-                    spriteBatch.Draw(l.texture, new Vector2(l.X, l.Y));
-                }
+                            //Draw hitboxes (debug)
+                            spriteBatch.Draw(hbtexWall, w.boundingBox, Color.White);
+                        }
 
-                //Draw Player
-                spriteBatch.Draw(player.texture, new Vector2(player.x, player.y));
+                        foreach (Chest c in chests)
+                        {
+                            spriteBatch.Draw(c.texture, new Vector2(c.X, c.Y));
+                        }
 
-                foreach (Door d in doors)
-                {
-                    spriteBatch.Draw(d.texture, new Vector2(d.X, d.Y));
-                }
+                        foreach (Ladder l in ladders)
+                        {
+                            spriteBatch.Draw(l.texture, new Vector2(l.X, l.Y));
+                        }
 
-                //Draw loading zones
-                foreach (Rectangle z  in loadingZones)
-                {
-                    spriteBatch.Draw(hbtexLoadingZone, z, Color.White);
-                }
+                        //Draw Player
+                        spriteBatch.Draw(player.texture, new Vector2(player.x, player.y));
+
+                        foreach (Door d in doors)
+                        {
+                            spriteBatch.Draw(d.texture, new Vector2(d.X, d.Y));
+                        }
+
+                        //Draw loading zones
+                        foreach (Rectangle z in loadingZones)
+                        {
+                            spriteBatch.Draw(hbtexLoadingZone, z, Color.White);
+                        }
+                    }
+                    break;
             }
 
             //Draw debug text
